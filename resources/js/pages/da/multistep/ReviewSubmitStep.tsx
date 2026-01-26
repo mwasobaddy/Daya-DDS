@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { router } from '@inertiajs/react';
 
 interface Props {
   value: Record<string, unknown>;
@@ -11,11 +12,24 @@ export default function ReviewSubmitStep({ value, onBack }: Props) {
 
   const handleSubmit = () => {
     setIsSubmitting(true);
-    // TODO: Submit to backend
-    setTimeout(() => {
-      alert('Submitted successfully!');
-      setIsSubmitting(false);
-    }, 1500);
+    const submitData = {
+      name: value.fullName,
+      email: value.email,
+      phone: value.phone,
+      social_platforms: value.socialPlatforms || {},
+      preferred_contact_method: value.commChannel,
+      wallet_address: value.walletAddress, // Assuming it's added
+    };
+    router.post('/da/register', submitData, {
+      onSuccess: () => {
+        setIsSubmitting(false);
+        // Success handled by redirect
+      },
+      onError: (errors) => {
+        setIsSubmitting(false);
+        // Errors handled by Inertia
+      },
+    });
   };
 
   const renderField = (label: string, val: unknown) => {

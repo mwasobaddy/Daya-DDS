@@ -12,6 +12,7 @@ class Da extends Model
         'user_id',
         'social_platforms',
         'prefered_contact_method',
+        'wallet_address',
     ];
 
     protected $casts = [

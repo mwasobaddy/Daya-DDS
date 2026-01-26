@@ -20,6 +20,7 @@ use App\Http\Controllers\DaController;
 
 Route::get('da/', [DaController::class, 'index'])->name('da.index');
 Route::get('da/register', [DaController::class, 'register'])->name('da.register');
+Route::post('da/register', [DaController::class, 'store'])->name('da.store');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
