@@ -26,6 +26,7 @@ export default function SocialMediaStep({ value, onChange, onNext, onBack }: Pro
     (value.socialPlatforms as Record<string, string | undefined>) || {}
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
 
   const handleCheck = (key: string, checked: boolean) => {
     setSelected((prev: Record<string, string | undefined>) => {
@@ -37,10 +38,16 @@ export default function SocialMediaStep({ value, onChange, onNext, onBack }: Pro
       }
       return next;
     });
+    if (errors.socialPlatforms) {
+      setErrors(prev => ({ ...prev, socialPlatforms: '' }));
+    }
   };
 
   const handleSelect = (key: string, val: string) => {
     setSelected((prev: Record<string, string | undefined>) => ({ ...prev, [key]: val }));
+    if (errors.socialPlatforms) {
+      setErrors(prev => ({ ...prev, socialPlatforms: '' }));
+    }
   };
 
   const handleNext = () => {
@@ -60,6 +67,7 @@ export default function SocialMediaStep({ value, onChange, onNext, onBack }: Pro
     }
 
     setErrors({});
+    setLoading(true);
     onChange({ socialPlatforms: selected });
     onNext();
   };
@@ -74,6 +82,7 @@ export default function SocialMediaStep({ value, onChange, onNext, onBack }: Pro
                 <Checkbox
                   id={p.key}
                   checked={selected[p.key] !== undefined}
+                  disabled={loading}
                   onCheckedChange={(checked) => handleCheck(p.key, checked === true)}
                 />
                 <span className="ml-3 text-sm font-medium">{p.label}</span>
@@ -82,6 +91,7 @@ export default function SocialMediaStep({ value, onChange, onNext, onBack }: Pro
                 <div className="mt-3 ml-7">
                   <Select
                     value={selected[p.key]}
+                    disabled={loading}
                     onValueChange={(value) => handleSelect(p.key, value)}
                   >
                     <SelectTrigger className="w-full px-4 py-2 text-sm text-gray-900 dark:text-white bg-white border dark:bg-neutral-800 border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none">
@@ -107,6 +117,7 @@ export default function SocialMediaStep({ value, onChange, onNext, onBack }: Pro
         <Button
           type="button"
           onClick={onBack}
+          disabled={loading}
           variant="outline"
           className="px-6 py-2.5"
         >
@@ -114,9 +125,17 @@ export default function SocialMediaStep({ value, onChange, onNext, onBack }: Pro
         </Button>
         <Button
           type="submit"
-          className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm"
+          disabled={loading}
+          className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
-          Continue
+          {loading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              Processing...
+            </>
+          ) : (
+            'Continue'
+          )}
         </Button>
       </div>
     </form>

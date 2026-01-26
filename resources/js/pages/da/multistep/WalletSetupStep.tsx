@@ -23,6 +23,7 @@ export default function WalletSetupStep({ value, onChange, onNext, onBack }: Pro
   const [commChannel, setCommChannel] = useState<string>(String(value.commChannel || ""));
   const [agreed, setAgreed] = useState<boolean>(!!value.agreed);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
 
   const handleNext = () => {
     const newErrors: Record<string, string> = {};
@@ -40,6 +41,7 @@ export default function WalletSetupStep({ value, onChange, onNext, onBack }: Pro
     }
 
     setErrors({});
+    setLoading(true);
     onChange({ walletType, pin, commChannel, agreed });
     onNext();
   };
@@ -60,7 +62,12 @@ export default function WalletSetupStep({ value, onChange, onNext, onBack }: Pro
           </Label>
           <Select
             value={commChannel}
-            onValueChange={(value) => setCommChannel(value)}
+            onValueChange={(value) => {
+              setCommChannel(value);
+              if (errors.commChannel) {
+                setErrors(prev => ({ ...prev, commChannel: '' }));
+              }
+            }}
           >
             <SelectTrigger className="w-full px-4 py-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none">
               <SelectValue placeholder="Select channel" />
@@ -83,7 +90,12 @@ export default function WalletSetupStep({ value, onChange, onNext, onBack }: Pro
           </Label>
           <Select
             value={walletType}
-            onValueChange={(value) => setWalletType(value)}
+            onValueChange={(value) => {
+              setWalletType(value);
+              if (errors.walletType) {
+                setErrors(prev => ({ ...prev, walletType: '' }));
+              }
+            }}
           >
             <SelectTrigger className="w-full px-4 py-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none">
               <SelectValue placeholder="Select wallet type" />
@@ -110,7 +122,12 @@ export default function WalletSetupStep({ value, onChange, onNext, onBack }: Pro
               type="password"
               maxLength={4}
               value={pin}
-              onChange={(e) => setPin(e.target.value)}
+              onChange={(e) => {
+                setPin(e.target.value);
+                if (errors.pin) {
+                  setErrors(prev => ({ ...prev, pin: '' }));
+                }
+              }}
               placeholder="4-digit PIN"
             />
             <InputError message={errors.pin} />
@@ -125,7 +142,12 @@ export default function WalletSetupStep({ value, onChange, onNext, onBack }: Pro
               type="password"
               maxLength={4}
               value={confirmPin}
-              onChange={(e) => setConfirmPin(e.target.value)}
+              onChange={(e) => {
+                setConfirmPin(e.target.value);
+                if (errors.confirmPin) {
+                  setErrors(prev => ({ ...prev, confirmPin: '' }));
+                }
+              }}
               placeholder="Confirm PIN"
             />
             <InputError message={errors.confirmPin} />
@@ -137,9 +159,14 @@ export default function WalletSetupStep({ value, onChange, onNext, onBack }: Pro
           <Label className="flex items-start cursor-pointer group">
             <Checkbox
               checked={agreed}
-              onCheckedChange={(checked) => setAgreed(checked === true)}
+              onCheckedChange={(checked) => {
+                setAgreed(checked === true);
+                if (errors.agreed) {
+                  setErrors(prev => ({ ...prev, agreed: '' }));
+                }
+              }}
             />
-            <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
+            <span className="ml-3 text-sm text-muted-foreground">
               I agree to the <span className="text-blue-600 underline">terms and conditions</span>
             </span>
           </Label>
@@ -157,10 +184,22 @@ export default function WalletSetupStep({ value, onChange, onNext, onBack }: Pro
           Back
         </Button>
         <Button
-          type="submit"
-          className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm"
+          type="button"
+          onClick={handleNext}
+          disabled={loading}
+          className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Continue
+          {loading ? (
+            <div className="flex items-center justify-center">
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Processing...
+            </div>
+          ) : (
+            "Complete Registration"
+          )}
         </Button>
       </div>
     </form>
