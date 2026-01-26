@@ -13,13 +13,13 @@ class DaController extends Controller
         if ($request->wantsJson()) {
             return response()->json([
                 'video_url' => 'https://youtu.be/KBSQg6WPxtU',
-                'title' => 'DA Explainer',
+                'title' => 'Become a Digital Ambassador',
                 'description' => 'Learn how the DA program works and how to get started.',
             ]);
         }
         return Inertia::render('da/index', [
             'videoUrl' => 'https://youtu.be/KBSQg6WPxtU',
-            'title' => 'DA Explainer',
+            'title' => 'Become a Digital Ambassador',
             'description' => 'Learn how the DA program works and how to get started.',
         ]);
     }
