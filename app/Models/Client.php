@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Client extends Model
+{
+    protected $table = 'client';
+
+    protected $fillable = [
+        'user_id',
+        'business_name',
+        'full_name',
+        'email',
+        'phone',
+        'country_id',
+        'county_id',
+        'subcounty_id',
+        'ward_id',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // Add relationships for country, county, etc. if models exist
+}
