@@ -5,10 +5,15 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
 Route::get('/', function () {
-    return Inertia::render('welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
+    return Inertia::render('welcome', []);
 })->name('home');
+
+Route::redirect('/login', '/');
+Route::redirect('/register', '/');
+Route::redirect('/dashboard', '/');
+Route::redirect('/forgot-password', '/');
+Route::redirect('/user/confirm-password', '/');
+Route::redirect('/email/verify/{id}/{hash}', '/');
 
 
 use App\Http\Controllers\DaController;
