@@ -1,6 +1,6 @@
+import { router } from '@inertiajs/react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { router } from '@inertiajs/react';
 
 interface Props {
   value: Record<string, unknown>;
@@ -13,12 +13,24 @@ export default function ReviewSubmitStep({ value, onBack }: Props) {
   const handleSubmit = () => {
     setIsSubmitting(true);
     const submitData = {
-      name: value.fullName,
+      fullName: value.fullName,
       email: value.email,
       phone: value.phone,
+      nationalId: value.nationalId,
+      dob: value.dob,
+      gender: value.gender,
+      referralCode: value.referralCode,
+      country: value.country,
+      county: value.county,
+      subcounty: value.subcounty,
+      ward: value.ward,
+      state: value.state,
+      lga: value.lga,
+      nigeriaWard: value.nigeriaWard,
       social_platforms: value.socialPlatforms || {},
       preferred_contact_method: value.commChannel,
-      wallet_address: value.walletAddress, // Assuming it's added
+      wallet_type: value.walletType,
+      pin: value.pin,
     };
     router.post('/da/register', submitData, {
       onSuccess: () => {
