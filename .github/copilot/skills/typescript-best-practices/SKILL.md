@@ -1,71 +1,107 @@
-# TypeScript: Avoiding `any` for Safer Code
+---
+name: typescript-type-safety
+description: >-
+  Enforces strict typing and eliminates the use of 'any' in TypeScript projects. 
+  Activates when writing TypeScript/TSX, defining interfaces, handling API responses, 
+  managing React/Inertia state, or refactoring legacy code to resolve type-related bugs.
+---
 
-## Why Avoid `any`?
-- Using `any` disables type checking, making your code less safe and maintainable.
-- It hides potential bugs and reduces editor IntelliSense.
-- It can lead to runtime errors that could have been caught at compile time.
+# TypeScript Type Safety
 
-## What to Use Instead
-- **Prefer specific interfaces** for known data shapes.
-- For generic objects (like form data or API responses), use `Record<string, unknown>`.
-- For arrays, use `unknown[]` or a specific type (e.g., `User[]`).
-- Use union types for limited sets of values (e.g., `'active' | 'inactive'`).
-- Use `unknown` for truly unknown types, then narrow them with type guards.
+## When to Apply
 
-## Example: Refactoring Props
+Activate this skill when:
 
-**Bad:**
-```tsx
+- Defining component props or application state.
+- Handling data from external APIs or dynamic JSON payloads.
+- Refactoring code to resolve `no-explicit-any` ESLint warnings.
+- Implementing type guards or narrowing logic for safer data handling.
+- Working with generic object structures where the shape is not immediately known.
+
+## Documentation
+
+Use `search-docs` for detailed TypeScript utility types, narrowing strategies, and advanced generics.
+
+## Basic Usage
+
+### Avoiding `any`
+
+Using `any` effectively disables the TypeScript compiler for that variable. It hides potential bugs, reduces editor IntelliSense, and leads to runtime errors that could have been caught during development.
+
+### Preferred Type Alternatives
+
+- **Specific Interfaces:** Always the first choice for known data shapes.
+- **Record<string, unknown>:** Use for generic objects (e.g., form data) where keys are strings but values vary.
+- **unknown:** Use for truly unknown values that require narrowing before use.
+
+### Refactoring Props
+
+Replace unconstrained `any` types in component definitions with structured interfaces.
+
+<code-snippet name="Refactoring Component Props" lang="tsx">
+
+// Good: Specific or Record-based
 interface Props {
-  value: any;
+  value: Record<string, unknown>; 
   onBack: () => void;
 }
-```
 
-**Good:**
-```tsx
-interface Props {
-  value: Record<string, unknown>; // or a specific interface
-  onBack: () => void;
-}
-```
+</code-snippet>
 
-## Practical Example: Form Data in React Components
+## Practical Patterns
 
-When working with form data in React components (e.g., Inertia.js forms), replace `any` with `Record<string, unknown>`:
+### Managing Form State
 
-**Before:**
-```tsx
-const [formData, setFormData] = useState<any>({});
-```
+When working with form data in React components (e.g., Inertia.js forms), avoid initializing state with `any`.
 
-**After:**
-```tsx
+<code-snippet name="Safer Form State" lang="tsx">
+
+// Avoid: useState<any>({})
 const [formData, setFormData] = useState<Record<string, unknown>>({});
-```
 
-However, `Record<string, unknown>` can cause type errors when accessing properties as strings. Cast to `String()` for string operations:
-
-```tsx
-// If you need to treat a value as a string
+// Accessing values safely via casting
 const displayName = String(formData.name || '');
-```
 
-## Common Pitfalls and Fixes
+</code-snippet>
 
-### Pitfall: Type Errors with Record<string, unknown>
-When using `Record<string, unknown>`, TypeScript may complain about assignments to string-typed variables.
+## Type Strategy Comparison
 
-**Fix:** Use `String()` casting for string contexts:
-```tsx
-const [firstName, setFirstName] = useState(String(formData.firstName || ''));
-```
+Use specific narrowing and utility types to maintain safety:
 
-### Pitfall: Overusing Record<string, unknown>
-Don't use it everywhere—define specific interfaces when possible for better type safety.
+| Use | Instead of |
+|-----|------------|
+| `Record<string, unknown>` | `any` (for generic objects) |
+| `unknown[]` | `any[]` (for generic arrays) |
+| `'active' \| 'inactive'` | `string` (for specific sets) |
+| `String(value)` | `value as any` (for string operations) |
 
-**Better Approach:**
-```tsx
+## Advanced Narrowing
+
+### Using `unknown` and Type Guards
+
+Use `unknown` when the type is dynamic. Narrow it using type guards to ensure type safety.
+
+
+
+<code-snippet name="Type Guard Pattern" lang="typescript">
+
+function isString(value: unknown): value is string {
+  return typeof value === 'string';
+}
+
+if (isString(someValue)) {
+  // TypeScript safely allows string methods here
+  console.log(someValue.toUpperCase());
+}
+
+</code-snippet>
+
+## Better Approach: Specific Interfaces
+
+For the highest level of safety, always prefer a dedicated interface over generic Records when the structure is predictable.
+
+<code-snippet name="Defining Form Interfaces" lang="tsx">
+
 interface UserFormData {
   firstName: string;
   lastName: string;
@@ -77,20 +113,15 @@ const [formData, setFormData] = useState<UserFormData>({
   lastName: '',
   email: '',
 });
-```
 
-## When to Use `unknown`
-- Use `unknown` when you truly do not know the type, and always narrow it before use.
-- Narrow with type guards or assertions:
-```tsx
-function isString(value: unknown): value is string {
-  return typeof value === 'string';
-}
+</code-snippet>
 
-if (isString(someValue)) {
-  // Now TypeScript knows someValue is a string
-}
-```
+## Common Pitfalls
+
+- **Accessing Properties on `unknown`:** TypeScript will block direct access to properties on `unknown`. You must narrow the type first using `typeof` or a custom guard.
+- **Type Errors with `Record`:** `Record<string, unknown>` can cause errors when assigning to strictly typed string variables. **Fix:** Use `String()` casting for string contexts.
+- **Overusing `Record`:** Do not use generic records for everything; if an API returns a consistent shape, document it with an `interface`.
+- **Casting vs. Narrowing:** Avoid `value as TargetType` (assertion) when you can use `if (check)` (narrowing). Narrowing is inherently safer.
 
 ## References
 - [TypeScript no-explicit-any rule](https://typescript-eslint.io/rules/no-explicit-any/)
