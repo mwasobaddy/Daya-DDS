@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('dcd', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')()->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('business_name');
             $table->string('business_address');
             $table->json('business_type');
