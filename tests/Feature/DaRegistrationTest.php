@@ -52,7 +52,7 @@ describe('DA Registration', function () {
             'county' => 1,
             'subcounty' => 1,
             'ward' => 1,
-            'social_platforms' => ['twitter' => '@johndoe'],
+            'social_platforms' => ['twitter' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
             'wallet_type' => 'Personal',
             'pin' => '1234',
@@ -85,7 +85,7 @@ describe('DA Registration', function () {
             'county' => 1,
             'subcounty' => 1,
             'ward' => 1,
-            'social_platforms' => ['twitter' => '@johndoe'],
+            'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
             'wallet_type' => 'Personal',
             'pin' => '1234',
@@ -113,7 +113,7 @@ describe('DA Registration', function () {
             'county' => 1,
             'subcounty' => 1,
             'ward' => 1,
-            'social_platforms' => ['twitter' => '@johndoe'],
+            'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
             'wallet_type' => 'Personal',
             'pin' => '1234',
@@ -145,7 +145,7 @@ describe('DA Registration', function () {
             'county' => 1,
             'subcounty' => 1,
             'ward' => 1,
-            'social_platforms' => ['twitter' => '@johndoe'],
+            'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
             'wallet_type' => 'Personal',
             'pin' => '1234',
@@ -186,7 +186,7 @@ describe('DA Registration', function () {
             'county' => 1,
             'subcounty' => 1,
             'ward' => 1,
-            'social_platforms' => ['twitter' => '@johndoe'],
+            'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
             'wallet_type' => 'Personal',
             'pin' => '1234',
@@ -239,7 +239,7 @@ describe('DA Registration', function () {
             'county' => 1,
             'subcounty' => 1,
             'ward' => 1,
-            'social_platforms' => ['twitter' => '@johndoe'],
+            'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
             'wallet_type' => 'Personal',
             'pin' => '1234',
@@ -285,7 +285,7 @@ describe('DA Registration', function () {
             'county' => 1,
             'subcounty' => 1,
             'ward' => 1,
-            'social_platforms' => ['twitter' => '@johndoe'],
+            'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
             'wallet_type' => 'Personal',
             'pin' => '1234',
@@ -318,7 +318,7 @@ describe('DA Registration', function () {
             'county' => 1,
             'subcounty' => 1,
             'ward' => 1,
-            'social_platforms' => ['twitter' => '@johndoe'],
+            'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
             'wallet_type' => 'Personal',
             'pin' => '1234',
@@ -337,7 +337,7 @@ describe('DA Registration', function () {
     test('creates DA record with correct data', function () {
         $daService = app(\App\Services\DaService::class);
 
-        $socialPlatforms = ['twitter' => '@johndoe', 'facebook' => 'johndoe'];
+        $socialPlatforms = ['x' => '1K-10K', 'facebook' => 'Less than 1K'];
         $contactMethod = 'WhatsApp';
 
         $data = [
@@ -389,7 +389,7 @@ describe('DA Registration', function () {
             'county' => 1,
             'subcounty' => 1,
             'ward' => 1,
-            'social_platforms' => ['twitter' => '@johndoe'],
+            'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
             'wallet_type' => 'Personal',
             'pin' => '1234',
