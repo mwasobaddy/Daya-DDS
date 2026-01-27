@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Da;
 use App\Models\User;
 use App\Models\VentureShare;
+use App\Models\Referral;
 use App\Notifications\DaAccountSetupNotification;
 use App\Notifications\DaReferralRewardNotification;
 use App\Notifications\DaWalletCreatedNotification;
@@ -55,9 +56,9 @@ class DaService
                 'wallet_type' => $data['wallet_type'],
                 'wallet_status' => 'active', // Changed from pending to active
                 'wallet_pin' => $data['pin'],
-                'wallet_balance' => '0',
-                'total_DDS_balance' => '0',
-                'total_DWS_balance' => '0',
+                'wallet_balance' => '0.00',
+                'total_DDS_balance' => '0.00',
+                'total_DWS_balance' => '0.00',
                 'password' => Hash::make('temporary_password'), // TODO: handle proper password
             ]);
 
@@ -67,6 +68,16 @@ class DaService
                 'social_platforms' => $data['social_platforms'],
                 'prefered_contact_method' => $data['preferred_contact_method'],
             ]);
+
+            // Create referral record
+            if ($referrer) {
+                $referralType = $this->determineReferralType($referrer, $user);
+                Referral::create([
+                    'referrer_id' => $referrer->id,
+                    'referred_id' => $user->id,
+                    'type' => $referralType,
+                ]);
+            }
 
             // Handle token awards if DA count is below 3000
             if ($shouldAwardTokens && $referrer) {
@@ -104,12 +115,28 @@ class DaService
     }
 
     /**
+     * Determine the referral type based on referrer and referred user roles
+     */
+    private function determineReferralType(User $referrer, User $referred): string
+    {
+        $referrerRole = $referrer->role;
+        $referredRole = $referred->role;
+
+        return match ($referrerRole) {
+            'admin' => 'admin_to_da',
+            'da' => 'da_to_da',
+            'dcd' => 'dcd_to_da',
+            default => 'admin_to_da', // fallback
+        };
+    }
+
+    /**
      * Award referral tokens to referrer
      */
     private function awardReferralTokens(User $referrer, User $newDa): void
     {
-        $ddsAward = 200;
-        $dwsAward = 200;
+        $ddsAward = 200.00;
+        $dwsAward = 200.00;
 
         // Update referrer's balances
         $referrer->increment('total_DDS_balance', $ddsAward);

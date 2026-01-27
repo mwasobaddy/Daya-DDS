@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Dcd;
 use App\Models\User;
 use App\Models\VentureShare;
+use App\Models\Referral;
 use App\Notifications\DcdAccountSetupNotification;
 use App\Notifications\DcdReferralRewardNotification;
 use App\Notifications\DcdWalletCreatedNotification;
@@ -12,31 +13,31 @@ use App\Notifications\NewDcdRegistrationNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Validation\ValidationException;
 
 class DcdService
 {
+    public function __construct(
+        private QrCodeService $qrCodeService,
+        private PdfService $pdfService
+    ) {}
+
     public function createDcd(array $data): Dcd
     {
         return DB::transaction(function () use ($data) {
+            // Validate referral code if provided
+            $referrer = $this->validateAndGetReferrer($data['referralCode'] ?? null);
+
+            // Count current DCD users
+            $currentDcdCount = User::where('role', 'dcd')->count();
+            $shouldAwardTokens = $currentDcdCount < 3000;
+
             // Map gender
             $gender = match ($data['gender']) {
                 'Male' => 'male',
                 'Female' => 'female',
                 default => 'male',
             };
-
-            // Handle referral logic
-            $referrer = null;
-            if (! empty($data['referralCode'])) {
-                $referrer = User::where('referral_code', $data['referralCode'])->first();
-            } else {
-                // No referral code provided - assign to admin with least tokens
-                $referrer = $this->getAdminWithLeastTokens();
-            }
-
-            // Count current DCD users
-            $currentDcdCount = User::where('role', 'dcd')->count();
-            $shouldAwardTokens = $currentDcdCount < 3000;
 
             // Create user first
             $user = User::create([
@@ -55,14 +56,17 @@ class DcdService
                 'wallet_type' => 'Business', // DCDs have business wallets
                 'wallet_status' => 'active',
                 'wallet_pin' => $data['pin'],
-                'wallet_balance' => '0',
-                'total_DDS_balance' => '0',
-                'total_DWS_balance' => '0',
+                'wallet_balance' => '0.00',
+                'total_DDS_balance' => '0.00',
+                'total_DWS_balance' => '0.00',
                 'password' => Hash::make('temporary_password'), // TODO: handle proper password
             ]);
 
             // Generate QR code for the DCD
-            $qrCodePath = $this->generateQrCode($user);
+            $qrCodePath = $this->qrCodeService->generateQrCode($user);
+
+            // Generate PDF guide
+            $pdfPath = $this->pdfService->generateQrCodePdf($user, $qrCodePath);
 
             // Create DCD record
             $dcd = Dcd::create([
@@ -78,9 +82,25 @@ class DcdService
                 'music_preferences' => $data['musicPreferences'] ?? [],
                 'safety_preferences' => $data['safetyPreferences'],
                 'qr_code_path' => $qrCodePath,
+                'pdf_guide_path' => $pdfPath,
             ]);
 
-            // Handle token awards if DCD count is below 3000
+            // Create referral record
+            if ($referrer) {
+                $referralType = $this->determineReferralType($referrer, $user);
+                Referral::create([
+                    'referrer_id' => $referrer->id,
+                    'referred_id' => $user->id,
+                    'type' => $referralType,
+                ]);
+            }
+
+            // Award signup tokens to new DCD if under cap
+            if ($shouldAwardTokens) {
+                $this->awardSignupTokens($user);
+            }
+
+            // Handle referral token awards if DCD count is below 3000 and referrer exists
             if ($shouldAwardTokens && $referrer) {
                 $this->awardReferralTokens($referrer, $user);
             }
@@ -90,6 +110,48 @@ class DcdService
 
             return $dcd;
         });
+    }
+
+    /**
+     * Validate referral code and get referrer
+     */
+    private function validateAndGetReferrer(?string $referralCode): ?User
+    {
+        if (empty($referralCode)) {
+            // No referral code provided - assign to admin with least tokens
+            return $this->getAdminWithLeastTokens();
+        }
+
+        $referrer = User::where('referral_code', $referralCode)->first();
+
+        if (! $referrer) {
+            throw ValidationException::withMessages([
+                'referralCode' => ['The referral code is invalid.'],
+            ]);
+        }
+
+        return $referrer;
+    }
+
+    /**
+     * Award signup tokens to new DCD
+     */
+    private function awardSignupTokens(User $user): void
+    {
+        $ddsAward = 1000.00;
+        $dwsAward = 1000.00;
+
+        // Update user's balances
+        $user->increment('total_DDS_balance', $ddsAward);
+        $user->increment('total_DWS_balance', $dwsAward);
+
+        // Create venture share record
+        VentureShare::create([
+            'user_id' => $user->id,
+            'dds_earned' => $ddsAward,
+            'dws_earned' => $dwsAward,
+            'reason' => 'DCD Signup Bonus',
+        ]);
     }
 
     /**
@@ -109,21 +171,6 @@ class DcdService
         }
 
         return ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-    }
-
-    /**
-     * Generate QR code for DCD
-     */
-    private function generateQrCode(User $user): string
-    {
-        // Generate a simple QR code path - in a real implementation,
-        // you'd use a QR code library to generate the actual image
-        $qrCodePath = 'qrcodes/dcd_'.$user->id.'.png';
-
-        // For now, just return the path - QR code generation would be implemented here
-        // using a library like simplesoftwareio/simple-qrcode
-
-        return $qrCodePath;
     }
 
     /**
@@ -150,12 +197,28 @@ class DcdService
     }
 
     /**
+     * Determine the referral type based on referrer and referred user roles
+     */
+    private function determineReferralType(User $referrer, User $referred): string
+    {
+        $referrerRole = $referrer->role;
+        $referredRole = $referred->role;
+
+        return match ($referrerRole) {
+            'admin' => 'admin_to_dcd',
+            'da' => 'da_to_dcd',
+            'dcd' => 'dcd_to_dcd',
+            default => 'admin_to_dcd', // fallback
+        };
+    }
+
+    /**
      * Award referral tokens to referrer
      */
     private function awardReferralTokens(User $referrer, User $newDcd): void
     {
-        $ddsAward = 500; // Higher reward for DCD referrals
-        $dwsAward = 500;
+        $ddsAward = 500.00; // Higher reward for DCD referrals
+        $dwsAward = 500.00;
 
         // Update referrer's balances
         $referrer->increment('total_DDS_balance', $ddsAward);
@@ -175,8 +238,10 @@ class DcdService
      */
     private function sendNotifications(User $newDcd, ?User $referrer, bool $tokensAwarded): void
     {
-        // Send account setup email to new DCD
-        $newDcd->notify(new DcdAccountSetupNotification);
+        // Send account setup email to new DCD with token info
+        $ddsEarned = $tokensAwarded ? 1000 : 0;
+        $dwsEarned = $tokensAwarded ? 1000 : 0;
+        $newDcd->notify(new DcdAccountSetupNotification($ddsEarned, $dwsEarned));
 
         // Send wallet creation email to new DCD
         $newDcd->notify(new DcdWalletCreatedNotification($newDcd->wallet_pin));
