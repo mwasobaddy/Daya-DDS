@@ -1,12 +1,13 @@
+import { router } from '@inertiajs/react';
 import { CheckCircle, Edit, AlertCircle } from 'lucide-react';
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
 interface Props {
   formData: Record<string, unknown>;
-  onSubmit: () => void;
   onBack: () => void;
   onEditStep: (stepIndex: number) => void;
 }
@@ -22,7 +23,7 @@ const contentTypeLabels: Record<string, string> = {
   artwork: 'Artwork'
 };
 
-export default function ReviewSubmitStep({ formData, onSubmit, onBack, onEditStep }: Props) {
+export default function ReviewSubmitStep({ formData, onBack, onEditStep }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string>('');
 
@@ -31,17 +32,66 @@ export default function ReviewSubmitStep({ formData, onSubmit, onBack, onEditSte
     setSubmitError('');
 
     try {
-      // Here you would typically make an API call to submit the form
-      // For now, we'll simulate the submission
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const submitData = {
+        // Account Setup
+        fullName: String(formData.fullName || ''),
+        nationalId: String(formData.nationalId || ''),
+        dob: String(formData.dob || ''),
+        gender: String(formData.gender || ''),
+        email: String(formData.email || ''),
+        phone: String(formData.phone || ''),
+        businessAddress: String(formData.businessAddress || ''),
+        referralCode: formData.referralCode ? String(formData.referralCode) : null,
 
-      // If successful, call onSubmit
-      onSubmit();
+        // Location
+        country: String(formData.country || ''),
+        county: String(formData.county || ''),
+        subcounty: String(formData.subcounty || ''),
+        ward: String(formData.ward || ''),
+
+        // Business Information
+        businessName: String(formData.businessName || ''),
+        businessType: (() => {
+          const bt = formData.businessType as { types?: string[]; custom?: string } | undefined;
+          return {
+            types: Array.isArray(bt?.types) ? bt.types : [],
+            ...(bt?.custom ? { custom: String(bt.custom) } : {}),
+          };
+        })(),
+        operationalDays: Array.isArray(formData.operationalDays) ? formData.operationalDays : [],
+        openingTime: String(formData.openingTime || ''),
+        closingTime: String(formData.closingTime || ''),
+        footTrafficEstimate: String(formData.footTrafficEstimate || ''),
+
+        // Content Preferences
+        campaignTypes: Array.isArray(formData.selectedContentTypes) ? formData.selectedContentTypes : (formData.selectedContentTypes ? [formData.selectedContentTypes] : []),
+        musicPreferences: Array.isArray(formData.selectedMusicGenres) ? formData.selectedMusicGenres : (formData.selectedMusicGenres ? [formData.selectedMusicGenres] : []),
+        safetyPreferences: Array.isArray(formData.selectedAudiences) ? formData.selectedAudiences : (formData.selectedAudiences ? [formData.selectedAudiences] : []),
+
+        // Wallet Setup
+        pin: String(formData.pin || ''),
+        agreeToTerms: Boolean(formData.agreeToTerms),
+      };
+
+      router.post('/dcd/register', submitData, {
+        onSuccess: () => {
+          setIsSubmitting(false);
+          toast.success('Registration submitted successfully! Redirecting...');
+          // Success handled by redirect
+        },
+        onError: (errors) => {
+          setIsSubmitting(false);
+          // Show specific validation errors
+          const errorMessages = Object.values(errors).flat().join(', ');
+          setSubmitError(errorMessages || 'Failed to submit registration. Please try again.');
+          toast.error(errorMessages || 'Failed to submit registration. Please try again.');
+        },
+      });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Registration submission failed:', error);
-      setSubmitError('Failed to submit registration. Please try again.');
-    } finally {
       setIsSubmitting(false);
+      setSubmitError('An unexpected error occurred. Please try again.');
+      toast.error('An unexpected error occurred. Please try again.');
     }
   };
 

@@ -151,11 +151,6 @@ export default function DCDSignup() {
                         {currentStep === 4 && (
                             <ReviewSubmitStep
                                 formData={formData}
-                                onSubmit={() => {
-                                    // Handle form submission
-                                    console.log('Form submitted:', formData);
-                                    alert('Registration submitted successfully!');
-                                }}
                                 onBack={prevStep}
                                 onEditStep={setCurrentStep}
                             />
