@@ -129,7 +129,7 @@ export default function DCDSignup() {
                                 value={formData}
                                 onChange={updateForm}
                                 onNext={nextStep}
-                                onPrevious={prevStep}
+                                onBack={prevStep}
                             />
                         )}
                         {currentStep === 2 && (
@@ -137,7 +137,7 @@ export default function DCDSignup() {
                                 value={formData}
                                 onChange={updateForm}
                                 onNext={nextStep}
-                                onPrevious={prevStep}
+                                onBack={prevStep}
                             />
                         )}
                         {currentStep === 3 && (
@@ -145,7 +145,7 @@ export default function DCDSignup() {
                                 value={formData}
                                 onChange={updateForm}
                                 onNext={nextStep}
-                                onPrevious={prevStep}
+                                onBack={prevStep}
                             />
                         )}
                         {currentStep === 4 && (
@@ -156,7 +156,7 @@ export default function DCDSignup() {
                                     console.log('Form submitted:', formData);
                                     alert('Registration submitted successfully!');
                                 }}
-                                onPrevious={prevStep}
+                                onBack={prevStep}
                                 onEditStep={setCurrentStep}
                             />
                         )}
@@ -165,7 +165,7 @@ export default function DCDSignup() {
                     {/* Footer */}
                     <div className="mt-6 text-center text-sm text-gray-500">
                         Need help?{' '}
-                        <a href="#" className="text-blue-600 hover:underline">
+                        <a href="mailto:support@daya.africa" className="text-blue-600 hover:underline">
                             Contact support
                         </a>
                     </div>

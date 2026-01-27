@@ -134,14 +134,14 @@ export default function DASignup() {
 							/>
 						)}
 						{currentStep === 3 && (
-							<ReviewSubmitStep value={formData} onBack={prevStep} />
+							<ReviewSubmitStep value={formData} onBack={prevStep} onEditStep={setCurrentStep} />
 						)}
 					</CardContent>
 
 					{/* Footer */}
 					<div className="mt-6 text-center text-sm text-gray-500">
 						Need help?{' '}
-						<a href="#" className="text-blue-600 hover:underline">
+						<a href="mailto:support@daya.africa" className="text-blue-600 hover:underline">
 							Contact support
 						</a>
 					</div>
