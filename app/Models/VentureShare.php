@@ -16,8 +16,8 @@ class VentureShare extends Model
     ];
 
     protected $casts = [
-        'dds_earned' => 'decimal:4',
-        'dws_earned' => 'decimal:4',
+        'dds_earned' => 'decimal:2',
+        'dws_earned' => 'decimal:2',
     ];
 
     public function user()

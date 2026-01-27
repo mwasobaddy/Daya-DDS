@@ -22,6 +22,23 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'full_name',
+        'phone',
+        'national_id',
+        'dob',
+        'gender',
+        'country_id',
+        'county_id',
+        'subcounty_id',
+        'ward_id',
+        'referral_code',
+        'wallet_type',
+        'wallet_status',
+        'wallet_pin',
+        'wallet_balance',
+        'total_DDS_balance',
+        'total_DWS_balance',
     ];
 
     /**
@@ -47,6 +64,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
+            'total_DDS_balance' => 'decimal:2',
+            'total_DWS_balance' => 'decimal:2',
+            'wallet_balance' => 'decimal:2',
         ];
     }
 
