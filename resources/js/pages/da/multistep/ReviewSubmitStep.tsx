@@ -33,7 +33,7 @@ export default function ReviewSubmitStep({ value, onBack, onEditStep }: Props) {
         county: String(value.county || ''),
         subcounty: String(value.subcounty || ''),
         ward: String(value.ward || ''),
-        social_platforms: Object.keys((value.socialPlatforms as Record<string, string>) || {}),
+        social_platforms: (value.socialPlatforms as Record<string, string>) || {},
         preferred_contact_method: String(value.commChannel || ''),
         wallet_type: String(value.walletType || ''),
         pin: String(value.pin || ''),
