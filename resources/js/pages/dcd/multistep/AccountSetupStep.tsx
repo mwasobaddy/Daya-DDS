@@ -202,6 +202,20 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
     if (!subcounty) newErrors.subcounty = 'Subcounty/Local Government is required.';
     if (!ward) newErrors.ward = 'Ward is required.';
 
+    // Check if location names can be found
+    if (country && !countries.find(c => c.id === parseInt(country))) {
+      newErrors.country = 'Country data not loaded. Please wait and try again.';
+    }
+    if (county && !counties.find(c => c.id === parseInt(county))) {
+      newErrors.county = 'County/State data not loaded. Please wait and try again.';
+    }
+    if (subcounty && !subcounties.find(s => s.id === parseInt(subcounty))) {
+      newErrors.subcounty = 'Subcounty/Local Government data not loaded. Please wait and try again.';
+    }
+    if (ward && !wards.find(w => w.id === parseInt(ward))) {
+      newErrors.ward = 'Ward data not loaded. Please wait and try again.';
+    }
+
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
@@ -215,9 +229,13 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
         phone,
         businessAddress,
         country,
+        countryName: countries.find(c => c.id === parseInt(country))?.name || country,
         county,
+        countyName: counties.find(c => c.id === parseInt(county))?.name || county,
         subcounty,
+        subcountyName: subcounties.find(s => s.id === parseInt(subcounty))?.name || subcounty,
         ward,
+        wardName: wards.find(w => w.id === parseInt(ward))?.name || ward,
       });
       onNext();
     }
