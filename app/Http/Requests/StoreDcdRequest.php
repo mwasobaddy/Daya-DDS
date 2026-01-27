@@ -30,7 +30,7 @@ class StoreDcdRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'phone' => 'required|string|unique:users,phone',
             'businessAddress' => 'required|string|max:500',
-            'referralCode' => 'nullable|string',
+            'referralCode' => 'nullable|string|exists:users,referral_code',
 
             // Location
             'country' => 'required|exists:countries,id',
@@ -62,8 +62,6 @@ class StoreDcdRequest extends FormRequest
             // Wallet Setup
             'pin' => 'required|string|size:4|regex:/^[0-9]+$/',
             'agreeToTerms' => 'required|accepted',
-            'agreeToPrivacy' => 'required|accepted',
-            'agreeToMarketing' => 'nullable|boolean',
         ];
 
         // Make location fields required based on country
