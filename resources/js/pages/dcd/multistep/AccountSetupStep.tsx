@@ -172,7 +172,7 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
   const handleNext = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!referralCode) newErrors.referralCode = 'Referral code is required.';
+    // Referral code is now optional
     if (!fullName) newErrors.fullName = 'Full name is required.';
     if (!nationalId) newErrors.nationalId = 'National ID is required.';
     if (nationalId && !/^\d+$/.test(nationalId)) newErrors.nationalId = 'National ID must contain only numbers.';
@@ -229,7 +229,7 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
         {/* Referral Code */}
         <div className="grid gap-2">
           <Label htmlFor="referralCode">
-            Referral Code <span className="text-red-500">*</span>
+            Referral Code
           </Label>
           <Input
             id="referralCode"
