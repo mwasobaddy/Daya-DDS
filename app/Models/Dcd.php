@@ -14,7 +14,8 @@ class Dcd extends Model
         'business_address',
         'business_type',
         'operating_days',
-        'operating_hours',
+        'opening_time',
+        'closing_time',
         'foot_traffic_estimate',
         'campaign_types',
         'music_preferences',
@@ -25,7 +26,6 @@ class Dcd extends Model
     protected $casts = [
         'business_type' => 'array',
         'operating_days' => 'array',
-        'operating_hours' => 'array',
         'campaign_types' => 'array',
         'music_preferences' => 'array',
         'safety_preferences' => 'array',
