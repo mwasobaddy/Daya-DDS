@@ -20,6 +20,11 @@ interface LocationOption {
 
 const genderOptions = ['Male', 'Female', 'Other'];
 
+// Calculate maximum date for 18+ years old (18 years ago from today)
+const maxDate = new Date();
+maxDate.setFullYear(maxDate.getFullYear() - 18);
+const maxDateString = maxDate.toISOString().split('T')[0];
+
 export default function AccountSetupStep({ value, onChange, onNext }: Props) {
   const [referralCode, setReferralCode] = useState(String(value.referralCode ?? ''));
   const [fullName, setFullName] = useState(String(value.fullName ?? ''));
@@ -148,6 +153,21 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
     if (!nationalId) newErrors.nationalId = 'National ID is required.';
     if (nationalId && !/^\d+$/.test(nationalId)) newErrors.nationalId = 'National ID must contain only numbers.';
     if (!dob) newErrors.dob = 'Date of birth is required.';
+    else {
+      const birthDate = new Date(dob);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      
+      // Adjust age if birthday hasn't occurred this year
+      const adjustedAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) 
+        ? age - 1 
+        : age;
+      
+      if (adjustedAge < 18) {
+        newErrors.dob = 'You must be at least 18 years old to register.';
+      }
+    }
     if (!gender) newErrors.gender = 'Gender is required.';
     if (!email) newErrors.email = 'Email is required.';
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) newErrors.email = 'Invalid email address.';
@@ -272,7 +292,7 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
             <Input
               id="dob"
               type="date"
-            //   className="w-full px-4 py-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none"
+              max={maxDateString}
               value={dob}
               onChange={e => {
                 setDob(e.target.value);
