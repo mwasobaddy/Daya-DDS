@@ -31,10 +31,10 @@ return new class extends Migration
             $table->string('wallet_type', ['personal', 'business', 'both']);
             $table->string('wallet_status');
             $table->string('wallet_pin');
-            $table->string('wallet_balance');
+            $table->string('wallet_balance', 12, 2);
 
-            $table->string('total_DDS_balance');
-            $table->string('total_DWS_balance');
+            $table->string('total_DDS_balance', 12, 2);
+            $table->string('total_DWS_balance', 12, 2);
 
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

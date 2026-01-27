@@ -27,6 +27,7 @@ return new class extends Migration
             $table->json('safety_preferences');
 
             $table->string('qr_code_path');
+            $table->string('pdf_guide_path')->nullable();
 
             $table->timestamps();
         });
