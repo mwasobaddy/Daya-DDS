@@ -1,8 +1,8 @@
 import { User, Share2, Wallet, CheckCircle, BadgeCheck } from 'lucide-react';
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import LeftStepIndicator from './components/LeftStepIndicator';
-import TopStepIndicator from './components/TopStepIndicator';
+import LeftStepIndicator from '../components/LeftStepIndicator';
+import TopStepIndicator from '../components/TopStepIndicator';
 import AccountSetupStep from './multistep/AccountSetupStep';
 import ReviewSubmitStep from './multistep/ReviewSubmitStep';
 import SocialMediaStep from './multistep/SocialMediaStep';

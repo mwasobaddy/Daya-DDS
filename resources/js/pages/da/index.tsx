@@ -138,7 +138,7 @@ export default function Index({ title, description }: Props) {
         <section className="text-center relative">
           <Link
             href="/da/register"
-            className="group inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-10 py-5 text-lg font-bold text-white shadow-xl hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-95 transition-all duration-200"
+            className="group inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-10 py-5 text-lg font-bold text-white shadow-xl hover:bg-indigo-500 focus-visible:outline focus-visible:outline-offset-2 active:scale-95 transition-all duration-200"
           >
             Get Started Today
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

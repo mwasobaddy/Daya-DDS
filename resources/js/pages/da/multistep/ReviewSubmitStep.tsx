@@ -28,7 +28,7 @@ export default function ReviewSubmitStep({ value, onBack }: Props) {
       state: String(value.state || ''),
       lga: String(value.lga || ''),
       nigeriaWard: String(value.nigeriaWard || ''),
-      social_platforms: (value.socialPlatforms as Record<string, string>) || {},
+      social_platforms: Object.keys((value.socialPlatforms as Record<string, string>) || {}),
       preferred_contact_method: String(value.commChannel || ''),
       wallet_type: String(value.walletType || ''),
       pin: String(value.pin || ''),
@@ -41,7 +41,9 @@ export default function ReviewSubmitStep({ value, onBack }: Props) {
       },
       onError: (errors) => {
         setIsSubmitting(false);
-        toast.error('Failed to submit application. Please try again.');
+        // Show specific validation errors
+        const errorMessages = Object.values(errors).flat().join(', ');
+        toast.error(errorMessages || 'Failed to submit application. Please try again.');
         // Errors handled by Inertia
       },
     });

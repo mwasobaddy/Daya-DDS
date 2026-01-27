@@ -67,7 +67,7 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
   // Fetch counties when country changes
   useEffect(() => {
     if (!country) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setCounties([]);
       setCounty('');
       return;
@@ -118,7 +118,7 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
   // Fetch wards when subcounty changes
   useEffect(() => {
     if (!subcounty) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setWards([]);
       setWard('');
       return;
@@ -146,11 +146,13 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
 
     if (!fullName) newErrors.fullName = 'Full name is required.';
     if (!nationalId) newErrors.nationalId = 'National ID is required.';
+    if (nationalId && !/^\d+$/.test(nationalId)) newErrors.nationalId = 'National ID must contain only numbers.';
     if (!dob) newErrors.dob = 'Date of birth is required.';
     if (!gender) newErrors.gender = 'Gender is required.';
     if (!email) newErrors.email = 'Email is required.';
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) newErrors.email = 'Invalid email address.';
     if (!phone) newErrors.phone = 'Phone number is required.';
+    if (phone && !/^\+\d{1,4}\d+$/.test(phone)) newErrors.phone = 'Phone number must be in format: +254700000000';
     if (!address) newErrors.address = 'Address is required.';
     if (!country) newErrors.country = 'Country is required.';
 
@@ -251,7 +253,9 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
               className="w-full px-4 py-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none"
               value={nationalId}
               onChange={e => {
-                setNationalId(e.target.value);
+                // Only allow numeric input
+                const numericValue = e.target.value.replace(/[^0-9]/g, '');
+                setNationalId(numericValue);
                 if (errors.nationalId) {
                   setErrors(prev => ({ ...prev, nationalId: '' }));
                 }
@@ -339,7 +343,13 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
               className="w-full px-4 py-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none"
               value={phone}
               onChange={e => {
-                setPhone(e.target.value);
+                // Only allow + and numbers, format: +(country code)(number)
+                const cleanedValue = e.target.value.replace(/[^+\d]/g, '');
+                // Ensure + is only at the beginning
+                const formattedValue = cleanedValue.startsWith('+') 
+                  ? '+' + cleanedValue.slice(1).replace(/\+/g, '')
+                  : cleanedValue.replace(/\+/g, '');
+                setPhone(formattedValue);
                 if (errors.phone) {
                   setErrors(prev => ({ ...prev, phone: '' }));
                 }
