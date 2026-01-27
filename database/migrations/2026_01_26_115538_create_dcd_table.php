@@ -18,15 +18,15 @@ return new class extends Migration
             $table->string('business_address');
             $table->json('business_type');
             $table->json('operating_days');
-            $table->json('operating_hours');
+            $table->time('opening_time')->nullable();
+            $table->time('closing_time')->nullable();
             $table->string('foot_traffic_estimate');
 
             $table->json('campaign_types');
             $table->json('music_preferences')->nullable();
             $table->json('safety_preferences');
-            
-            $table->string('qr_code_path');
 
+            $table->string('qr_code_path');
 
             $table->timestamps();
         });

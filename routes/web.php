@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\DaController;
+use App\Http\Controllers\DcdController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
 
 Route::get('/', function () {
     return Inertia::render('welcome', []);
@@ -15,12 +16,13 @@ Route::redirect('/forgot-password', '/');
 Route::redirect('/user/confirm-password', '/');
 Route::redirect('/email/verify/{id}/{hash}', '/');
 
-
-use App\Http\Controllers\DaController;
-
 Route::get('da/', [DaController::class, 'index'])->name('da.index');
 Route::get('da/register', [DaController::class, 'register'])->name('da.register');
 Route::post('da/register', [DaController::class, 'store'])->name('da.store');
+
+Route::get('dcd/', [DcdController::class, 'index'])->name('dcd.index');
+Route::get('dcd/register', [DcdController::class, 'register'])->name('dcd.register');
+Route::post('dcd/register', [DcdController::class, 'store'])->name('dcd.store');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {

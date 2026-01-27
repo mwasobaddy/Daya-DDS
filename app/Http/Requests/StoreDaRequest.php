@@ -28,7 +28,7 @@ class StoreDaRequest extends FormRequest
             'nationalId' => 'required|string|unique:users,national_id',
             'dob' => 'required|date',
             'gender' => 'required|in:Male,Female,Other',
-            'referralCode' => 'required|string|unique:users,referral_code',
+            'referralCode' => 'nullable|string',
             'country' => 'required|exists:countries,id',
             'county' => 'nullable|exists:counties,id',
             'subcounty' => 'nullable|exists:sub_counties,id',
@@ -57,6 +57,24 @@ class StoreDaRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if ($this->filled('referralCode')) {
+                $referrer = \App\Models\User::where('referral_code', $this->referralCode)->first();
+                if (! $referrer) {
+                    $validator->errors()->add('referralCode', 'The referral code is invalid.');
+                }
+            }
+        });
     }
 
     /**

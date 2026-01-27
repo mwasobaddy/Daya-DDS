@@ -19,7 +19,11 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
-        // get the GeographicalDataSeeder to run
+
+        // Seed geographical data first
         $this->call(GeographicalDataSeeder::class);
+
+        // Seed admin users
+        $this->call(AdminSeeder::class);
     }
 }
