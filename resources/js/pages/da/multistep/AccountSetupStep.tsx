@@ -207,9 +207,13 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
       phone,
       address,
       country,
+      countryName: countries.find(c => String(c.id) === country)?.name || country,
       county,
+      countyName: counties.find(c => String(c.id) === county)?.name || county,
       subcounty,
+      subcountyName: subcounties.find(s => String(s.id) === subcounty)?.name || subcounty,
       ward,
+      wardName: wards.find(w => String(w.id) === ward)?.name || ward,
     });
     onNext();
   };

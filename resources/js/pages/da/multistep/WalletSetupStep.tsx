@@ -1,3 +1,4 @@
+import { Eye, EyeOff } from "lucide-react";
 import React, { useState } from "react";
 import InputError from "@/components/input-error";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,8 @@ export default function WalletSetupStep({ value, onChange, onNext, onBack }: Pro
   const [agreed, setAgreed] = useState<boolean>(!!value.agreed);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [showPin, setShowPin] = useState(false);
+  const [showConfirmPin, setShowConfirmPin] = useState(false);
 
   const handleNext = () => {
     const newErrors: Record<string, string> = {};
@@ -117,19 +120,34 @@ export default function WalletSetupStep({ value, onChange, onNext, onBack }: Pro
             <Label htmlFor="pin">
               Wallet PIN <span className="text-red-500">*</span>
             </Label>
-            <Input
-              id="pin"
-              type="password"
-              maxLength={4}
-              value={pin}
-              onChange={(e) => {
-                setPin(e.target.value);
-                if (errors.pin) {
-                  setErrors(prev => ({ ...prev, pin: '' }));
-                }
-              }}
-              placeholder="4-digit PIN"
-            />
+            <div className="relative">
+              <Input
+                id="pin"
+                type={showPin ? "text" : "password"}
+                maxLength={4}
+                value={pin}
+                onChange={(e) => {
+                  const numericValue = e.target.value.replace(/\D/g, '');
+                  setPin(numericValue);
+                  if (errors.pin) {
+                    setErrors(prev => ({ ...prev, pin: '' }));
+                  }
+                }}
+                placeholder="4-digit PIN"
+                className="pr-10"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                onClick={() => setShowPin(!showPin)}
+              >
+                {showPin ? (
+                  <EyeOff className="h-4 w-4 text-gray-400" />
+                ) : (
+                  <Eye className="h-4 w-4 text-gray-400" />
+                )}
+              </button>
+            </div>
             <InputError message={errors.pin} />
           </div>
 
@@ -137,19 +155,34 @@ export default function WalletSetupStep({ value, onChange, onNext, onBack }: Pro
             <Label htmlFor="confirmPin">
               Confirm PIN <span className="text-red-500">*</span>
             </Label>
-            <Input
-              id="confirmPin"
-              type="password"
-              maxLength={4}
-              value={confirmPin}
-              onChange={(e) => {
-                setConfirmPin(e.target.value);
-                if (errors.confirmPin) {
-                  setErrors(prev => ({ ...prev, confirmPin: '' }));
-                }
-              }}
-              placeholder="Confirm PIN"
-            />
+            <div className="relative">
+              <Input
+                id="confirmPin"
+                type={showConfirmPin ? "text" : "password"}
+                maxLength={4}
+                value={confirmPin}
+                onChange={(e) => {
+                  const numericValue = e.target.value.replace(/\D/g, '');
+                  setConfirmPin(numericValue);
+                  if (errors.confirmPin) {
+                    setErrors(prev => ({ ...prev, confirmPin: '' }));
+                  }
+                }}
+                placeholder="Confirm PIN"
+                className="pr-10"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                onClick={() => setShowConfirmPin(!showConfirmPin)}
+              >
+                {showConfirmPin ? (
+                  <EyeOff className="h-4 w-4 text-gray-400" />
+                ) : (
+                  <Eye className="h-4 w-4 text-gray-400" />
+                )}
+              </button>
+            </div>
             <InputError message={errors.confirmPin} />
           </div>
         </div>
@@ -165,6 +198,7 @@ export default function WalletSetupStep({ value, onChange, onNext, onBack }: Pro
                   setErrors(prev => ({ ...prev, agreed: '' }));
                 }
               }}
+              className='border-gray-400 dark:border-gray-50/30'
             />
             <span className="ml-3 text-sm text-muted-foreground">
               I agree to the <span className="text-blue-600 underline">terms and conditions</span>
