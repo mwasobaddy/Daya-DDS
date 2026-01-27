@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ScanController;
 use App\Http\Controllers\DaController;
 use App\Http\Controllers\DcdController;
 use App\Http\Controllers\LocationController;
@@ -16,3 +17,6 @@ Route::get('locations/countries', [LocationController::class, 'countries']);
 Route::get('locations/counties', [LocationController::class, 'counties']);
 Route::get('locations/subcounties', [LocationController::class, 'subcounties']);
 Route::get('locations/wards', [LocationController::class, 'wards']);
+
+// QR Code scanning
+Route::post('scan', [ScanController::class, 'scan']);
