@@ -21,6 +21,7 @@ class Dcd extends Model
         'music_preferences',
         'safety_preferences',
         'qr_code_path',
+        'pdf_guide_path',
     ];
 
     protected $casts = [
