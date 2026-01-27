@@ -25,7 +25,7 @@ class StoreDcdRequest extends FormRequest
             // Account Setup
             'fullName' => 'required|string|max:255',
             'nationalId' => 'required|string|unique:users,national_id',
-            'dob' => 'required|date|before:today',
+            'dob' => 'required|date|before:18 years ago|after:100 years ago',
             'gender' => 'required|in:Male,Female,Other',
             'email' => 'required|email|unique:users,email',
             'phone' => 'required|string|unique:users,phone',
@@ -107,6 +107,8 @@ class StoreDcdRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'dob.before' => 'You must be at least 18 years old to register.',
+            'dob.after' => 'Please enter a valid date of birth.',
             'country.required' => 'Please select your country.',
             'county.required' => 'Please select your county/state.',
             'subcounty.required' => 'Please select your subcounty/local government.',
