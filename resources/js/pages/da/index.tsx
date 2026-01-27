@@ -81,7 +81,7 @@ export default function Index({ title, description }: Props) {
             {[
               {
                 title: "Commission",
-                desc: "Earn 5% of all earnings from every DCD you recruit into the network.",
+                desc: "Earn 10% of all earnings from every DCD you recruit into the network.",
                 icon: Percent,
                 color: "text-indigo-600",
                 bg: "bg-indigo-50"
