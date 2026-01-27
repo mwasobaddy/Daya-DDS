@@ -21,7 +21,7 @@ interface Props {
     value: Record<string, unknown>;
     onChange: (data: Partial<BusinessInformationData>) => void;
     onNext: () => void;
-    onPrevious: () => void;
+    onBack: () => void;
 }
 
 // Grouped business types for grid display
@@ -86,7 +86,7 @@ function isValidFootTrafficOption(value: string): value is typeof footTrafficOpt
 }
 
 
-export default function BusinessInformationStep({ value, onChange, onNext, onPrevious }: Props) {
+export default function BusinessInformationStep({ value, onChange, onNext, onBack }: Props) {
     // Type-safe state initialization with proper defaults
     const [businessName, setBusinessName] = useState<string>(() => String(value.businessName ?? ''));
     const [businessTypesSelected, setBusinessTypesSelected] = useState<string[]>(() => {
@@ -120,6 +120,7 @@ export default function BusinessInformationStep({ value, onChange, onNext, onPre
     });
 
     const [errors, setErrors] = useState<FormErrors>({});
+    const [loading, setLoading] = useState(false);
 
     const handleNext = (): void => {
         const newErrors: FormErrors = {};
@@ -130,6 +131,7 @@ export default function BusinessInformationStep({ value, onChange, onNext, onPre
         if (businessTypesSelected.includes('other') && !otherBusinessType.trim()) {
             newErrors.businessType = 'Please specify your business type when selecting "other".';
         }
+
         if (operationalDays.length === 0) newErrors.operationalDays = 'Please select at least one operational day.';
         if (!openingTime) newErrors.openingTime = 'Opening time is required.';
         if (!closingTime) newErrors.closingTime = 'Closing time is required.';
@@ -139,6 +141,7 @@ export default function BusinessInformationStep({ value, onChange, onNext, onPre
 
         // Only proceed if no validation errors
         if (Object.keys(newErrors).length === 0) {
+            setLoading(true);
             const businessTypeData = {
                 types: businessTypesSelected,
                 ...(businessTypesSelected.includes('other') && otherBusinessType.trim() ? { custom: otherBusinessType.trim() } : {}),
@@ -373,17 +376,25 @@ export default function BusinessInformationStep({ value, onChange, onNext, onPre
             <div className="flex justify-between pt-4">
                 <Button
                     type="button"
+                    onClick={onBack}
                     variant="outline"
-                    onClick={onPrevious}
-                    className="px-6 py-2.5 border-gray-300 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+                    className="px-6 py-2.5"
                 >
-                    Previous
+                    Back
                 </Button>
                 <Button
                     type="submit"
-                    className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm"
+                    disabled={loading}
+                    className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
-                    Continue
+                    {loading ? (
+                        <>
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            Processing...
+                        </>
+                    ) : (
+                        'Continue'
+                    )}
                 </Button>
             </div>
         </form>

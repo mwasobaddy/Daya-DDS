@@ -84,6 +84,7 @@ export default function SocialMediaStep({ value, onChange, onNext, onBack }: Pro
                   checked={selected[p.key] !== undefined}
                   disabled={loading}
                   onCheckedChange={(checked) => handleCheck(p.key, checked === true)}
+                  className='border-gray-400 dark:border-gray-50/30'
                 />
                 <span className="ml-3 text-sm font-medium">{p.label}</span>
               </Label>

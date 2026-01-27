@@ -3,121 +3,82 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+
 
 interface Props {
   value: Record<string, unknown>;
   onChange: (data: Record<string, unknown>) => void;
   onNext: () => void;
-  onPrevious: () => void;
+  onBack: () => void;
 }
 
 const contentTypes = [
   { id: 'music', label: 'Music', description: 'Audio content including songs, albums, and playlists' },
-  { id: 'video', label: 'Video', description: 'Video content including movies, TV shows, and documentaries' },
-  { id: 'books', label: 'Books', description: 'E-books, audiobooks, and digital publications' },
-  { id: 'podcasts', label: 'Podcasts', description: 'Audio and video podcast episodes and series' },
   { id: 'games', label: 'Games', description: 'Video games, mobile games, and interactive content' },
-  { id: 'software', label: 'Software', description: 'Applications, tools, and digital products' },
-  { id: 'courses', label: 'Courses', description: 'Online courses, tutorials, and educational content' },
-  { id: 'artwork', label: 'Artwork', description: 'Digital art, illustrations, and creative content' },
+  { id: 'product_launch', label: 'Product Launch', description: 'New product announcements and launch campaigns' },
+  { id: 'events_promotions', label: 'Events & Promotions', description: 'Event marketing, promotional campaigns, and special offers' },
+  { id: 'movies', label: 'Movies', description: 'Film content including movies, documentaries, and cinematic works' },
+  { id: 'mobile_apps', label: 'Mobile Apps', description: 'Mobile applications for iOS and Android platforms' },
+  { id: 'surveys', label: 'Surveys', description: 'Market research, feedback collection, and data gathering tools' },
 ];
 
 const musicGenres = [
   'Afrobeat',
-  'Afropop',
+  'Afrobeats',
+  'Afro-rave',
+  'African hip-hop',
+  'Afro fusion',
+  'Alté',
+  'Amapiano',
   'Benga',
+  'Bongo Flava',
   'Blues',
   'Classical',
   'Country',
+  'Dancehall',
   'Electronic',
   'Folk',
   'Funk',
+  'Gengetone',
   'Gospel',
-  'Hip Hop/Rap',
+  'Hip Hop',
+  'House',
   'Jazz',
+  'Kapuka',
   'Kwaito',
+  'Lingala',
+  'Ohangla',
   'Pop',
-  'R&B/Soul',
+  'R&B',
+  'Rap',
   'Reggae',
   'Rock',
-  'Traditional/Folk',
-  'World Music',
-  'Other'
-];
-
-const distributionPlatforms = [
-  { id: 'spotify', label: 'Spotify', description: 'Music streaming platform' },
-  { id: 'apple_music', label: 'Apple Music', description: 'Apple\'s music streaming service' },
-  { id: 'youtube', label: 'YouTube', description: 'Video sharing and streaming platform' },
-  { id: 'netflix', label: 'Netflix', description: 'Video streaming service' },
-  { id: 'amazon_music', label: 'Amazon Music', description: 'Amazon\'s music streaming service' },
-  { id: 'deezer', label: 'Deezer', description: 'European music streaming platform' },
-  { id: 'tidal', label: 'Tidal', description: 'High-fidelity music streaming' },
-  { id: 'pandora', label: 'Pandora', description: 'Music discovery platform' },
-  { id: 'soundcloud', label: 'SoundCloud', description: 'Audio distribution and discovery' },
-  { id: 'amazon_kindle', label: 'Amazon Kindle', description: 'E-book distribution' },
-  { id: 'google_play', label: 'Google Play', description: 'Android apps and digital content' },
-  { id: 'apple_app_store', label: 'Apple App Store', description: 'iOS apps and digital content' },
-  { id: 'steam', label: 'Steam', description: 'PC gaming platform' },
-  { id: 'playstation_store', label: 'PlayStation Store', description: 'Sony gaming platform' },
-  { id: 'xbox_store', label: 'Xbox Store', description: 'Microsoft gaming platform' },
-  { id: 'udemy', label: 'Udemy', description: 'Online learning platform' },
-  { id: 'coursera', label: 'Coursera', description: 'Online education platform' },
-  { id: 'other', label: 'Other Platforms', description: 'Specify other platforms' },
+  'Rumba',
+  'Soul',
+  'Taarab',
+  'Traditional',
+  'Trap'
 ];
 
 const targetAudiences = [
-  'Children (Under 12)',
-  'Teenagers (13-19)',
-  'Young Adults (20-35)',
-  'Adults (36-55)',
-  'Seniors (55+)',
-  'Families',
-  'Professionals',
-  'Students',
-  'Music Enthusiasts',
-  'Gamers',
-  'Educators',
-  'Entrepreneurs',
-  'General Public'
+  'Kids Appropriate',
+  'Teen Appropriate (13+)',
+  'Adult Content (18+)',
+  'No restriction'
 ];
 
-const contentGoals = [
-  'Entertainment',
-  'Education',
-  'Information',
-  'Inspiration',
-  'Community Building',
-  'Monetization',
-  'Brand Awareness',
-  'Lead Generation',
-  'Customer Engagement',
-  'Social Impact'
-];
-
-export default function ContentPreferenceStep({ value, onChange, onNext, onPrevious }: Props) {
+export default function ContentPreferenceStep({ value, onChange, onNext, onBack }: Props) {
   const [selectedContentTypes, setSelectedContentTypes] = useState<string[]>(
     Array.isArray(value.selectedContentTypes) ? value.selectedContentTypes : []
   );
   const [selectedMusicGenres, setSelectedMusicGenres] = useState<string[]>(
     Array.isArray(value.selectedMusicGenres) ? value.selectedMusicGenres : []
   );
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(
-    Array.isArray(value.selectedPlatforms) ? value.selectedPlatforms : []
-  );
   const [selectedAudiences, setSelectedAudiences] = useState<string[]>(
     Array.isArray(value.selectedAudiences) ? value.selectedAudiences : []
   );
-  const [selectedGoals, setSelectedGoals] = useState<string[]>(
-    Array.isArray(value.selectedGoals) ? value.selectedGoals : []
-  );
-  const [otherPlatforms, setOtherPlatforms] = useState(String(value.otherPlatforms ?? ''));
-  const [contentStrategy, setContentStrategy] = useState(String(value.contentStrategy ?? ''));
-  const [monthlyContentVolume, setMonthlyContentVolume] = useState(String(value.monthlyContentVolume ?? ''));
-
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
 
   const handleContentTypeChange = (contentTypeId: string, checked: boolean) => {
     const newSelected = checked
@@ -142,30 +103,35 @@ export default function ContentPreferenceStep({ value, onChange, onNext, onPrevi
       : selectedMusicGenres.filter(g => g !== genre);
 
     setSelectedMusicGenres(newSelected);
-  };
 
-  const handlePlatformChange = (platformId: string, checked: boolean) => {
-    const newSelected = checked
-      ? [...selectedPlatforms, platformId]
-      : selectedPlatforms.filter(id => id !== platformId);
-
-    setSelectedPlatforms(newSelected);
+    // Clear error if user makes a selection
+    if (errors.selectedMusicGenres) {
+      setErrors(prev => ({ ...prev, selectedMusicGenres: '' }));
+    }
   };
 
   const handleAudienceChange = (audience: string, checked: boolean) => {
-    const newSelected = checked
-      ? [...selectedAudiences, audience]
-      : selectedAudiences.filter(a => a !== audience);
+    let newSelected = [...selectedAudiences];
+
+    if (checked) {
+      // Prevent selecting both Kids Appropriate and Adult Content (18+)
+      if (audience === 'Kids Appropriate' && selectedAudiences.includes('Adult Content (18+)')) {
+        return; // Don't allow this selection
+      }
+      if (audience === 'Adult Content (18+)' && selectedAudiences.includes('Kids Appropriate')) {
+        return; // Don't allow this selection
+      }
+      newSelected = [...selectedAudiences, audience];
+    } else {
+      newSelected = selectedAudiences.filter(a => a !== audience);
+    }
 
     setSelectedAudiences(newSelected);
-  };
 
-  const handleGoalChange = (goal: string, checked: boolean) => {
-    const newSelected = checked
-      ? [...selectedGoals, goal]
-      : selectedGoals.filter(g => g !== goal);
-
-    setSelectedGoals(newSelected);
+    // Clear error if user makes a selection
+    if (errors.selectedAudiences) {
+      setErrors(prev => ({ ...prev, selectedAudiences: '' }));
+    }
   };
 
   const handleNext = () => {
@@ -179,42 +145,22 @@ export default function ContentPreferenceStep({ value, onChange, onNext, onPrevi
       newErrors.selectedMusicGenres = 'Please select at least one music genre.';
     }
 
-    if (selectedPlatforms.length === 0) {
-      newErrors.selectedPlatforms = 'Please select at least one distribution platform.';
-    }
-
     if (selectedAudiences.length === 0) {
       newErrors.selectedAudiences = 'Please select at least one target audience.';
     }
 
-    if (selectedGoals.length === 0) {
-      newErrors.selectedGoals = 'Please select at least one content goal.';
-    }
-
-    if (!contentStrategy) {
-      newErrors.contentStrategy = 'Content strategy is required.';
-    }
-
-    if (!monthlyContentVolume) {
-      newErrors.monthlyContentVolume = 'Monthly content volume is required.';
-    }
-
-    if (selectedPlatforms.includes('other') && !otherPlatforms.trim()) {
-      newErrors.otherPlatforms = 'Please specify other platforms.';
+    if (selectedAudiences.includes('Kids Appropriate') && selectedAudiences.includes('Adult Content (18+)')) {
+      newErrors.selectedAudiences = 'You cannot select both Kids Appropriate and Adult Content (18+) audiences.';
     }
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
+      setLoading(true);
       onChange({
         selectedContentTypes,
         selectedMusicGenres,
-        selectedPlatforms,
         selectedAudiences,
-        selectedGoals,
-        otherPlatforms: selectedPlatforms.includes('other') ? otherPlatforms : '',
-        contentStrategy,
-        monthlyContentVolume,
       });
       onNext();
     }
@@ -229,18 +175,19 @@ export default function ContentPreferenceStep({ value, onChange, onNext, onPrevi
             <Label className="text-base font-semibold">
               Content Types <span className="text-red-500">*</span>
             </Label>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               Select the types of digital content you plan to distribute
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {contentTypes.map((type) => (
-              <div key={type.id} className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-gray-50">
+              <div key={type.id} className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-gray-200/50 dark:hover:bg-neutral-800 cursor-pointer transition-colors duration-200">
                 <Checkbox
                   id={type.id}
                   checked={selectedContentTypes.includes(type.id)}
                   onCheckedChange={(checked) => handleContentTypeChange(type.id, checked as boolean)}
+                  className='border-gray-400 dark:border-gray-50/30'
                 />
                 <div className="grid gap-1.5 leading-none">
                   <Label
@@ -249,7 +196,7 @@ export default function ContentPreferenceStep({ value, onChange, onNext, onPrevi
                   >
                     {type.label}
                   </Label>
-                  <p className="text-xs text-gray-600">{type.description}</p>
+                  <p className="text-xs text-muted-foreground">{type.description}</p>
                 </div>
               </div>
             ))}
@@ -264,7 +211,7 @@ export default function ContentPreferenceStep({ value, onChange, onNext, onPrevi
               <Label className="text-base font-semibold">
                 Music Genres <span className="text-red-500">*</span>
               </Label>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Select the music genres you specialize in
               </p>
             </div>
@@ -276,6 +223,7 @@ export default function ContentPreferenceStep({ value, onChange, onNext, onPrevi
                     id={`genre-${genre}`}
                     checked={selectedMusicGenres.includes(genre)}
                     onCheckedChange={(checked) => handleMusicGenreChange(genre, checked as boolean)}
+                    className='border-gray-400 dark:border-gray-50/30'
                   />
                   <Label
                     htmlFor={`genre-${genre}`}
@@ -289,63 +237,6 @@ export default function ContentPreferenceStep({ value, onChange, onNext, onPrevi
             <InputError message={errors.selectedMusicGenres} />
           </div>
         )}
-
-        {/* Distribution Platforms */}
-        <div className="grid gap-4">
-          <div>
-            <Label className="text-base font-semibold">
-              Distribution Platforms <span className="text-red-500">*</span>
-            </Label>
-            <p className="text-sm text-gray-600 mt-1">
-              Select the platforms where you plan to distribute content
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {distributionPlatforms.map((platform) => (
-              <div key={platform.id} className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-gray-50">
-                <Checkbox
-                  id={platform.id}
-                  checked={selectedPlatforms.includes(platform.id)}
-                  onCheckedChange={(checked) => handlePlatformChange(platform.id, checked as boolean)}
-                />
-                <div className="grid gap-1.5 leading-none">
-                  <Label
-                    htmlFor={platform.id}
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                  >
-                    {platform.label}
-                  </Label>
-                  <p className="text-xs text-gray-600">{platform.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <InputError message={errors.selectedPlatforms} />
-
-          {/* Other Platforms Textarea */}
-          {selectedPlatforms.includes('other') && (
-            <div className="grid gap-2">
-              <Label htmlFor="otherPlatforms">
-                Other Platforms <span className="text-red-500">*</span>
-              </Label>
-              <Textarea
-                id="otherPlatforms"
-                className="w-full px-4 py-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none"
-                value={otherPlatforms}
-                onChange={e => {
-                  setOtherPlatforms(e.target.value);
-                  if (errors.otherPlatforms) {
-                    setErrors(prev => ({ ...prev, otherPlatforms: '' }));
-                  }
-                }}
-                placeholder="Please specify other platforms you plan to use..."
-                rows={3}
-              />
-              <InputError message={errors.otherPlatforms} />
-            </div>
-          )}
-        </div>
 
         {/* Target Audience */}
         <div className="grid gap-4">
@@ -365,6 +256,7 @@ export default function ContentPreferenceStep({ value, onChange, onNext, onPrevi
                   id={`audience-${audience}`}
                   checked={selectedAudiences.includes(audience)}
                   onCheckedChange={(checked) => handleAudienceChange(audience, checked as boolean)}
+                  className='border-gray-400 dark:border-gray-50/30'
                 />
                 <Label
                   htmlFor={`audience-${audience}`}
@@ -377,99 +269,30 @@ export default function ContentPreferenceStep({ value, onChange, onNext, onPrevi
           </div>
           <InputError message={errors.selectedAudiences} />
         </div>
-
-        {/* Content Goals */}
-        <div className="grid gap-4">
-          <div>
-            <Label className="text-base font-semibold">
-              Content Goals <span className="text-red-500">*</span>
-            </Label>
-            <p className="text-sm text-gray-600 mt-1">
-              What are your main objectives for content distribution?
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {contentGoals.map((goal) => (
-              <div key={goal} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`goal-${goal}`}
-                  checked={selectedGoals.includes(goal)}
-                  onCheckedChange={(checked) => handleGoalChange(goal, checked as boolean)}
-                />
-                <Label
-                  htmlFor={`goal-${goal}`}
-                  className="text-sm cursor-pointer"
-                >
-                  {goal}
-                </Label>
-              </div>
-            ))}
-          </div>
-          <InputError message={errors.selectedGoals} />
-        </div>
-
-        {/* Content Strategy */}
-        <div className="grid gap-2">
-          <Label htmlFor="contentStrategy">
-            Content Strategy <span className="text-red-500">*</span>
-          </Label>
-          <Textarea
-            id="contentStrategy"
-            className="w-full px-4 py-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none"
-            value={contentStrategy}
-            onChange={e => {
-              setContentStrategy(e.target.value);
-              if (errors.contentStrategy) {
-                setErrors(prev => ({ ...prev, contentStrategy: '' }));
-              }
-            }}
-            placeholder="Describe your content distribution strategy, marketing approach, and how you plan to grow your audience..."
-            rows={4}
-          />
-          <InputError message={errors.contentStrategy} />
-        </div>
-
-        {/* Monthly Content Volume */}
-        <div className="grid gap-2">
-          <Label htmlFor="monthlyContentVolume">
-            Monthly Content Volume <span className="text-red-500">*</span>
-          </Label>
-          <Select value={monthlyContentVolume} onValueChange={(value) => {
-            setMonthlyContentVolume(value);
-            if (errors.monthlyContentVolume) {
-              setErrors(prev => ({ ...prev, monthlyContentVolume: '' }));
-            }
-          }}>
-            <SelectTrigger className="w-full px-4 py-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none">
-              <SelectValue placeholder="Select monthly volume" />
-            </SelectTrigger>
-            <SelectContent className="max-h-60">
-              <SelectItem value="1-5">1-5 pieces of content</SelectItem>
-              <SelectItem value="6-15">6-15 pieces of content</SelectItem>
-              <SelectItem value="16-30">16-30 pieces of content</SelectItem>
-              <SelectItem value="31-50">31-50 pieces of content</SelectItem>
-              <SelectItem value="50+">50+ pieces of content</SelectItem>
-            </SelectContent>
-          </Select>
-          <InputError message={errors.monthlyContentVolume} />
-        </div>
       </div>
 
       <div className="flex justify-between pt-4">
         <Button
           type="button"
+          onClick={onBack}
           variant="outline"
-          onClick={onPrevious}
-          className="px-6 py-2.5 border-gray-300 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+          className="px-6 py-2.5"
         >
-          Previous
+          Back
         </Button>
         <Button
           type="submit"
-          className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm"
+          disabled={loading}
+          className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
-          Continue
+          {loading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              Processing...
+            </>
+          ) : (
+            'Continue'
+          )}
         </Button>
       </div>
     </form>
