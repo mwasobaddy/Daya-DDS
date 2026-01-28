@@ -1,174 +1,464 @@
-import React, { useState } from 'react';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { ShoppingBag, Wrench, Utensils, DollarSign, Car, Users } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import InputError from '@/components/input-error';
-
-const businessTargets = {
-  Retail: ['kiosk_duka','mini_supermarket','wholesale_shop','hardware_store','agrovet','butchery','boutique','electronics','stationery','general_store'],
-  Services: ['salon','barber_shop','beauty_parlour','tailor','uber','shoe_repair','photography_studio','printing_cyber','laundry'],
-  Food: ['cafe','restaurant','fast_food','mama_mboga','milk_atm','bakery'],
-  Financial: ['mobile_money','bank_agent','bill_payment','betting_shop'],
-  Transport: ['boda_boda','matatu_sacco','fuel_station','car_wash'],
-  Community: ['church','school_canteen','bar_lounge','pharmacy','clinic','other'],
-};
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 
 interface Props {
-  value: Record<string, any>;
-  onChange: (data: Record<string, any>) => void;
+  value: Record<string, unknown>;
+  onChange: (data: Record<string, unknown>) => void;
   onNext: () => void;
   onBack: () => void;
 }
 
+interface LocationOption {
+  id: number;
+  name: string;
+  code: string;
+}
+
+const safetyPreferences = ['Safe for Work', 'Safe for Family', 'No restrictions'];
+
+const businessTypeGroups = [
+  {
+    label: 'Retail',
+    icon: ShoppingBag,
+    types: ['kiosk_duka', 'mini_supermarket', 'wholesale_shop', 'hardware_store', 'agrovet', 'butchery', 'boutique', 'electronics', 'stationery', 'general_store'],
+  },
+  {
+    label: 'Services',
+    icon: Wrench,
+    types: ['salon', 'barber_shop', 'beauty_parlour', 'tailor', 'uber', 'shoe_repair', 'photography_studio', 'printing_cyber', 'laundry'],
+  },
+  {
+    label: 'Food',
+    icon: Utensils,
+    types: ['cafe', 'restaurant', 'fast_food', 'mama_mboga', 'milk_atm', 'bakery'],
+  },
+  {
+    label: 'Financial',
+    icon: DollarSign,
+    types: ['mobile_money', 'bank_agent', 'bill_payment', 'betting_shop'],
+  },
+  {
+    label: 'Transport',
+    icon: Car,
+    types: ['boda_boda', 'matatu_sacco', 'fuel_station', 'car_wash'],
+  },
+  {
+    label: 'Community',
+    icon: Users,
+    types: ['church', 'school_canteen', 'bar_lounge', 'pharmacy', 'clinic', 'other'],
+  },
+];
+
 export default function TargetingBudgetStep({ value, onChange, onNext, onBack }: Props) {
+  const [selectedSafetyPreferences, setSelectedSafetyPreferences] = useState<string[]>(Array.isArray(value.selectedSafetyPreferences) ? value.selectedSafetyPreferences as string[] : []);
+  const [selectedBusinessTypes, setSelectedBusinessTypes] = useState<string[]>(Array.isArray(value.selectedBusinessTypes) ? value.selectedBusinessTypes as string[] : []);
+  const [otherBusinessType, setOtherBusinessType] = useState(String(value.otherBusinessType ?? ''));
+  const [totalBudget, setTotalBudget] = useState(String(value.totalBudget ?? ''));
+
+  // User's country from account setup
+  const [userCountry, setUserCountry] = useState(String(value.country ?? ''));
+  const [currencySymbol, setCurrencySymbol] = useState('KES'); // Default to KES
+
+  // Location targeting states
+  const [targetCountry, setTargetCountry] = useState(String(value.targetCountry ?? ''));
+  const [targetCounty, setTargetCounty] = useState(String(value.targetCounty ?? ''));
+  const [targetSubcounty, setTargetSubcounty] = useState(String(value.targetSubcounty ?? ''));
+  const [targetWard, setTargetWard] = useState(String(value.targetWard ?? ''));
+
+  // Location options states
+  const [countries, setCountries] = useState<LocationOption[]>([]);
+  const [counties, setCounties] = useState<LocationOption[]>([]);
+  const [subcounties, setSubcounties] = useState<LocationOption[]>([]);
+  const [wards, setWards] = useState<LocationOption[]>([]);
+
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
 
-  const validate = (): boolean => {
-    const e: Record<string, string> = {};
-    if (!value.contentSafety || !Array.isArray(value.contentSafety) || value.contentSafety.length === 0) e.contentSafety = 'Please select at least one content safety preference.';
-    if (!value.targetCountry) e.targetCountry = 'Please select a target country.';
-    if (!value.businessTypeTargeting || !Array.isArray(value.businessTypeTargeting) || value.businessTypeTargeting.length === 0) e.businessTypeTargeting = 'Please select at least one business type target.';
-    if (!value.campaignStart) e.campaignStart = 'Please select a start date.';
-    if (!value.campaignEnd) e.campaignEnd = 'Please select an end date.';
-    setErrors(e);
-    return Object.keys(e).length === 0;
+  // Fetch countries on component mount
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await fetch('/api/locations/countries');
+        if (response.ok) {
+          const data = await response.json();
+          setCountries(data);
+
+          // Set currency symbol based on user's country from account setup
+          if (userCountry) {
+            const userCountryData = data.find((country: any) => String(country.id) === userCountry);
+            if (userCountryData) {
+              setCurrencySymbol(userCountryData.currency_symbol || userCountryData.currency_code || 'KES');
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch countries:', error);
+      }
+    };
+    fetchCountries();
+  }, [userCountry]);
+
+  // Fetch counties when target country changes
+  useEffect(() => {
+    if (!targetCountry) {
+      setCounties([]);
+      setTargetCounty('');
+      return;
+    }
+
+    const fetchCounties = async () => {
+      try {
+        const response = await fetch(`/api/locations/counties?country_id=${targetCountry}`);
+        if (response.ok) {
+          const data = await response.json();
+          setCounties(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch counties:', error);
+      }
+    };
+    fetchCounties();
+  }, [targetCountry]);
+
+  // Fetch subcounties when target county changes
+  useEffect(() => {
+    if (!targetCounty) {
+      setSubcounties([]);
+      setTargetSubcounty('');
+      return;
+    }
+
+    const fetchSubcounties = async () => {
+      try {
+        const response = await fetch(`/api/locations/subcounties?county_id=${targetCounty}`);
+        if (response.ok) {
+          const data = await response.json();
+          setSubcounties(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch subcounties:', error);
+      }
+    };
+    fetchSubcounties();
+  }, [targetCounty]);
+
+  // Fetch wards when target subcounty changes
+  useEffect(() => {
+    if (!targetSubcounty) {
+      setWards([]);
+      setTargetWard('');
+      return;
+    }
+
+    const fetchWards = async () => {
+      try {
+        const response = await fetch(`/api/locations/wards?subcounty_id=${targetSubcounty}`);
+        if (response.ok) {
+          const data = await response.json();
+          setWards(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch wards:', error);
+      }
+    };
+    fetchWards();
+  }, [targetSubcounty]);
+
+  const handleBusinessTypeChange = (businessType: string, checked: boolean) => {
+    if (checked) {
+      setSelectedBusinessTypes(prev => [...prev, businessType]);
+    } else {
+      setSelectedBusinessTypes(prev => prev.filter(type => type !== businessType));
+    }
   };
 
-  const toggleBusinessType = (type: string, checked: boolean) => {
-    const selected = Array.isArray(value.businessTypeTargeting) ? [...value.businessTypeTargeting] : [];
-    if (checked) {
-      if (!selected.includes(type)) selected.push(type);
+  const allBusinessTypes = businessTypeGroups.flatMap(group => group.types);
+
+  const handleSelectAllBusinessTypes = () => {
+    if (selectedBusinessTypes.length === allBusinessTypes.length) {
+      setSelectedBusinessTypes([]);
     } else {
-      const idx = selected.indexOf(type);
-      if (idx >= 0) selected.splice(idx, 1);
+      setSelectedBusinessTypes(allBusinessTypes);
     }
-    onChange({ businessTypeTargeting: selected });
+    if (errors.businessTypes) {
+      setErrors(prev => ({ ...prev, businessTypes: '' }));
+    }
   };
 
-  const toggleSafety = (s: string, checked: boolean) => {
-    const arr = Array.isArray(value.contentSafety) ? [...value.contentSafety] : [];
+  const handleSafetyPreferenceChange = (safetyPref: string, checked: boolean) => {
     if (checked) {
-      if (!arr.includes(s)) arr.push(s);
+      setSelectedSafetyPreferences(prev => [...prev, safetyPref]);
     } else {
-      const idx = arr.indexOf(s);
-      if (idx >= 0) arr.splice(idx, 1);
+      setSelectedSafetyPreferences(prev => prev.filter(pref => pref !== safetyPref));
     }
-    onChange({ contentSafety: arr });
+  };
+
+  const handleNext = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (selectedSafetyPreferences.length === 0) newErrors.safetyPreferences = 'At least one safety preference must be selected.';
+    if (selectedBusinessTypes.length === 0) newErrors.businessTypes = 'At least one business type must be selected.';
+    if (selectedBusinessTypes.includes('other') && !otherBusinessType.trim()) {
+      newErrors.businessTypes = 'Please specify your business type when selecting "other".';
+    }
+    if (!totalBudget) newErrors.totalBudget = 'Total budget is required.';
+    if (parseFloat(totalBudget) <= 0) newErrors.totalBudget = 'Total budget must be greater than 0.';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+    setLoading(true);
+    onChange({
+      selectedSafetyPreferences,
+      selectedBusinessTypes,
+      otherBusinessType: selectedBusinessTypes.includes('other') ? otherBusinessType.trim() : '',
+      totalBudget: parseFloat(totalBudget),
+      targetCountry,
+      targetCountryName: countries.find(c => String(c.id) === targetCountry)?.name || targetCountry,
+      targetCounty,
+      targetCountyName: counties.find(c => String(c.id) === targetCounty)?.name || targetCounty,
+      targetSubcounty,
+      targetSubcountyName: subcounties.find(s => String(s.id) === targetSubcounty)?.name || targetSubcounty,
+      targetWard,
+      targetWardName: wards.find(w => String(w.id) === targetWard)?.name || targetWard,
+    });
+    onNext();
   };
 
   return (
-    <div>
-      <h2 className="text-lg font-semibold mb-4">Targeting & Budget</h2>
+    <form className="space-y-6" onSubmit={e => { e.preventDefault(); handleNext(); }}>
+      <div className="space-y-5">
+        {/* Safety Preferences */}
+        <div className="grid gap-4">
+          <div>
+            <Label className="text-base font-semibold">
+              Safety Preferences <span className="text-red-500">*</span>
+            </Label>
+            <p className="text-sm text-muted-foreground mt-1">
+              Select the safety preferences for your campaign
+            </p>
+          </div>
 
-      <div className="grid grid-cols-1 gap-4">
-        <div>
-          <Label>Content Safety preference</Label>
-          <div className="grid grid-cols-2 gap-2">
-            {['Kids Appropriate','Teen Appropriate (13+)','Adult Content (18+)','No restriction'].map((s) => (
-              <label key={s} className="flex items-center gap-2 text-sm">
-                <Checkbox checked={Array.isArray(value.contentSafety) && value.contentSafety.includes(s)} onCheckedChange={(c) => toggleSafety(s, Boolean(c))} />
-                <span>{s}</span>
-              </label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {safetyPreferences.map((pref) => (
+              <div key={pref} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`safety-${pref}`}
+                  checked={selectedSafetyPreferences.includes(pref)}
+                  onCheckedChange={(checked) => handleSafetyPreferenceChange(pref, checked as boolean)}
+                  className='border-gray-400 dark:border-gray-50/30'
+                />
+                <Label
+                  htmlFor={`safety-${pref}`}
+                  className="text-sm cursor-pointer"
+                >
+                  {pref}
+                </Label>
+              </div>
             ))}
           </div>
-          {errors.contentSafety && <InputError>{errors.contentSafety}</InputError>}
+          <InputError message={errors.safetyPreferences} />
         </div>
 
-        <div>
-          <Label>Target Country</Label>
-          <Select onValueChange={(val) => onChange({ targetCountry: val })} value={value.targetCountry || ''}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select country" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Kenya">Kenya</SelectItem>
-              <SelectItem value="Nigeria">Nigeria</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors.targetCountry && <InputError>{errors.targetCountry}</InputError>}
+        {/* Location Targeting */}
+        <div className="space-y-4">
+          <Label className="text-base font-semibold">Location Targeting (Optional)</Label>
+
+          <div className="grid gap-2">
+            <Label htmlFor="targetCountry">Country</Label>
+            <Select value={targetCountry} onValueChange={setTargetCountry}>
+              <SelectTrigger className="w-full px-4 py-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none">
+                <SelectValue placeholder="Select target country" />
+              </SelectTrigger>
+              <SelectContent className="max-h-60">
+                {countries.map((countryOpt) => (
+                  <SelectItem key={countryOpt.id} value={String(countryOpt.id)}>
+                    {countryOpt.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {targetCountry && (
+            <div className="grid gap-2">
+              <Label htmlFor="targetCounty">
+                {countries.find(c => String(c.id) === targetCountry)?.name === 'Kenya' ? 'County' : 'State'}
+              </Label>
+              <Select value={targetCounty} onValueChange={setTargetCounty} disabled={!targetCountry}>
+                <SelectTrigger className="w-full px-4 py-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none">
+                  <SelectValue placeholder={`Select ${countries.find(c => String(c.id) === targetCountry)?.name === 'Kenya' ? 'county' : 'state'}`} />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {counties.map((countyOpt) => (
+                    <SelectItem key={countyOpt.id} value={String(countyOpt.id)}>
+                      {countyOpt.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {targetCounty && (
+            <div className="grid gap-2">
+              <Label htmlFor="targetSubcounty">
+                {countries.find(c => String(c.id) === targetCountry)?.name === 'Kenya' ? 'Subcounty' : 'Local Government'}
+              </Label>
+              <Select value={targetSubcounty} onValueChange={setTargetSubcounty} disabled={!targetCounty}>
+                <SelectTrigger className="w-full px-4 py-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none">
+                  <SelectValue placeholder={`Select ${countries.find(c => String(c.id) === targetCountry)?.name === 'Kenya' ? 'subcounty' : 'local government'}`} />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {subcounties.map((subcountyOpt) => (
+                    <SelectItem key={subcountyOpt.id} value={String(subcountyOpt.id)}>
+                      {subcountyOpt.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {targetSubcounty && (
+            <div className="grid gap-2">
+              <Label htmlFor="targetWard">Ward</Label>
+              <Select value={targetWard} onValueChange={setTargetWard} disabled={!targetSubcounty}>
+                <SelectTrigger className="w-full px-4 py-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none">
+                  <SelectValue placeholder="Select ward" />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {wards.map((wardOpt) => (
+                    <SelectItem key={wardOpt.id} value={String(wardOpt.id)}>
+                      {wardOpt.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
 
-        {value.targetCountry === 'Kenya' && (
-          <>
-            <div>
-              <Label>County</Label>
-              <Input value={value.county || ''} onChange={(e) => onChange({ county: e.target.value })} />
-            </div>
-            <div>
-              <Label>Subcounty</Label>
-              <Input value={value.subcounty || ''} onChange={(e) => onChange({ subcounty: e.target.value })} />
-            </div>
-            <div>
-              <Label>Ward</Label>
-              <Input value={value.ward || ''} onChange={(e) => onChange({ ward: e.target.value })} />
-            </div>
-          </>
-        )}
-
-        {value.targetCountry === 'Nigeria' && (
-          <>
-            <div>
-              <Label>State</Label>
-              <Input value={value.state || ''} onChange={(e) => onChange({ state: e.target.value })} />
-            </div>
-            <div>
-              <Label>Local Government</Label>
-              <Input value={value.lga || ''} onChange={(e) => onChange({ lga: e.target.value })} />
-            </div>
-            <div>
-              <Label>Ward</Label>
-              <Input value={value.ward || ''} onChange={(e) => onChange({ ward: e.target.value })} />
-            </div>
-          </>
-        )}
-
-        <div>
-          <Label>Business Type Targeting</Label>
-          <div className="grid grid-cols-2 gap-4">
-            {Object.entries(businessTargets).map(([section, types]) => (
-              <div key={section}>
-                <div className="font-semibold">{section}</div>
-                <div className="grid grid-cols-1 gap-1 mt-2">
-                  {types.map((t) => (
-                    <label key={t} className="flex items-center gap-2 text-sm">
-                      <Checkbox checked={Array.isArray(value.businessTypeTargeting) && value.businessTypeTargeting.includes(t)} onCheckedChange={(c) => toggleBusinessType(t, Boolean(c))} />
-                      <span>{t}</span>
-                    </label>
+        {/* Business Type Targeting */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <Label className="text-base font-semibold">
+              Business Type Targeting <span className="text-red-500">*</span>
+            </Label>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="border-green-500 text-green-500 hover:bg-green-50"
+              onClick={handleSelectAllBusinessTypes}
+            >
+              {selectedBusinessTypes.length === allBusinessTypes.length ? 'Clear All' : 'Select All'}
+            </Button>
+          </div>
+          <Card className="shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-linear-to-t dark:from-neutral-900 dark:to-neutral-800 from-green-50 to-blue-50 dark:border-green-700 border rounded-xl h-80 overflow-y-auto">
+            {businessTypeGroups.map((group) => (
+              <div key={group.label} className="flex flex-col gap-2">
+                <div className="flex items-center gap-2 text-green-500 font-semibold text-base mb-1">
+                  <group.icon className="w-5 h-5" />
+                  {group.label}
+                </div>
+                <div className="flex flex-col gap-1">
+                  {group.types.map((type) => (
+                    <Label key={type} className="flex items-center gap-2 text-base cursor-pointer">
+                      <Checkbox
+                        id={type}
+                        checked={selectedBusinessTypes.includes(type)}
+                        onCheckedChange={(checked) => handleBusinessTypeChange(type, checked as boolean)}
+                        className="border-gray-400 dark:border-gray-50/30"
+                      />
+                      <span>{type}</span>
+                    </Label>
                   ))}
                 </div>
               </div>
             ))}
-          </div>
-          {errors.businessTypeTargeting && <InputError>{errors.businessTypeTargeting}</InputError>}
+          </Card>
+          <InputError message={errors.businessTypes} />
+          {selectedBusinessTypes.includes('other') && (
+            <div className="grid gap-2 mt-4">
+              <Label htmlFor="otherBusinessType">
+                Please specify your business type <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="otherBusinessType"
+                type="text"
+                className="w-full px-4 py-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none"
+                value={otherBusinessType}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setOtherBusinessType(e.target.value);
+                  if (errors.businessTypes) {
+                    setErrors(prev => ({ ...prev, businessTypes: '' }));
+                  }
+                }}
+                placeholder="e.g., Car dealership, Gym, etc."
+              />
+            </div>
+          )}
         </div>
 
-        <div>
-          <Label>Campaign duration</Label>
-          <div className="flex gap-2">
-            <Input type="date" value={value.campaignStart || ''} onChange={(e) => onChange({ campaignStart: e.target.value })} />
-            <Input type="date" value={value.campaignEnd || ''} onChange={(e) => onChange({ campaignEnd: e.target.value })} />
-          </div>
-          {errors.campaignStart && <InputError>{errors.campaignStart}</InputError>}
-          {errors.campaignEnd && <InputError>{errors.campaignEnd}</InputError>}
-        </div>
-
-        <div>
-          <Label>Target Audience (optional)</Label>
-          <Input value={value.targetAudience || ''} onChange={(e) => onChange({ targetAudience: e.target.value })} />
-        </div>
-
-        <div>
-          <Label>Key Objectives (optional)</Label>
-          <Input value={value.keyObjectives || ''} onChange={(e) => onChange({ keyObjectives: e.target.value })} />
-        </div>
-
-        <div className="flex gap-2 mt-4">
-          <Button variant="ghost" onClick={onBack}>Back</Button>
-          <Button onClick={() => { if (Object.keys(errors).length === 0) onNext(); else { if (validate()) onNext(); } }}>Next</Button>
+        {/* Budget */}
+        <div className="grid gap-2">
+          <Label htmlFor="totalBudget">
+            Total Budget ({currencySymbol}) <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="totalBudget"
+            type="number"
+            min="0"
+            step="0.01"
+            value={totalBudget}
+            onChange={e => {
+              setTotalBudget(e.target.value);
+              if (errors.totalBudget) {
+                setErrors(prev => ({ ...prev, totalBudget: '' }));
+              }
+            }}
+            placeholder="5000.00"
+          />
+          <InputError message={errors.totalBudget} />
         </div>
       </div>
-    </div>
+
+      <div className="flex justify-between pt-4">
+        <Button
+          type="button"
+          onClick={onBack}
+          disabled={loading}
+          variant="outline"
+          className="px-6 py-2.5 border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+        >
+          Back
+        </Button>
+        <Button
+          type="submit"
+          disabled={loading}
+          className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        >
+          {loading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              Processing...
+            </>
+          ) : (
+            'Continue'
+          )}
+        </Button>
+      </div>
+    </form>
   );
 }
