@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Country;
 use App\Models\County;
+use App\Models\Da;
+use App\Models\Dcd;
 use App\Models\Subcounty;
+use App\Models\User;
 use App\Models\Ward;
 use Illuminate\Http\Request;
 
@@ -57,5 +60,55 @@ class LocationController extends Controller
                 ->select('id', 'name', 'code')
                 ->get()
         );
+    }
+
+    public function validateEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $email = $request->input('email');
+        $exists = User::where('email', $email)->exists() ||
+                 Da::where('email', $email)->exists() ||
+                 Dcd::where('email', $email)->exists();
+
+        return response()->json([
+            'valid' => !$exists,
+            'message' => $exists ? 'This email address is already registered.' : null,
+        ]);
+    }
+
+    public function validateNationalId(Request $request)
+    {
+        $request->validate([
+            'national_id' => 'required|string',
+        ]);
+
+        $nationalId = $request->input('national_id');
+        $exists = Da::where('national_id', $nationalId)->exists() ||
+                 Dcd::where('national_id', $nationalId)->exists();
+
+        return response()->json([
+            'valid' => !$exists,
+            'message' => $exists ? 'This National ID is already registered.' : null,
+        ]);
+    }
+
+    public function validatePhone(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required|string',
+        ]);
+
+        $phone = $request->input('phone');
+        $exists = User::where('phone', $phone)->exists() ||
+                 Da::where('phone', $phone)->exists() ||
+                 Dcd::where('phone', $phone)->exists();
+
+        return response()->json([
+            'valid' => !$exists,
+            'message' => $exists ? 'This phone number is already registered.' : null,
+        ]);
     }
 }

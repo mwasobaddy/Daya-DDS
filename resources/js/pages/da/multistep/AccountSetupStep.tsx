@@ -49,6 +49,7 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [validating, setValidating] = useState<Record<string, boolean>>({});
 
   // Fetch countries on component mount
   useEffect(() => {
@@ -145,6 +146,94 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
     };
     fetchWards();
   }, [subcounty]);
+
+  // Validation functions
+  const validateEmail = async (emailValue: string) => {
+    if (!emailValue || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailValue)) return;
+
+    setValidating(prev => ({ ...prev, email: true }));
+    try {
+      const response = await fetch('/api/validate/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+        },
+        body: JSON.stringify({ email: emailValue }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (!data.valid) {
+          setErrors(prev => ({ ...prev, email: data.message }));
+        } else {
+          setErrors(prev => ({ ...prev, email: '' }));
+        }
+      }
+    } catch (error) {
+      console.error('Email validation failed:', error);
+    } finally {
+      setValidating(prev => ({ ...prev, email: false }));
+    }
+  };
+
+  const validateNationalId = async (nationalIdValue: string) => {
+    if (!nationalIdValue || !/^\d+$/.test(nationalIdValue)) return;
+
+    setValidating(prev => ({ ...prev, nationalId: true }));
+    try {
+      const response = await fetch('/api/validate/national-id', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+        },
+        body: JSON.stringify({ national_id: nationalIdValue }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (!data.valid) {
+          setErrors(prev => ({ ...prev, nationalId: data.message }));
+        } else {
+          setErrors(prev => ({ ...prev, nationalId: '' }));
+        }
+      }
+    } catch (error) {
+      console.error('National ID validation failed:', error);
+    } finally {
+      setValidating(prev => ({ ...prev, nationalId: false }));
+    }
+  };
+
+  const validatePhone = async (phoneValue: string) => {
+    if (!phoneValue || !/^\+\d{1,4}\d+$/.test(phoneValue)) return;
+
+    setValidating(prev => ({ ...prev, phone: true }));
+    try {
+      const response = await fetch('/api/validate/phone', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+        },
+        body: JSON.stringify({ phone: phoneValue }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (!data.valid) {
+          setErrors(prev => ({ ...prev, phone: data.message }));
+        } else {
+          setErrors(prev => ({ ...prev, phone: '' }));
+        }
+      }
+    } catch (error) {
+      console.error('Phone validation failed:', error);
+    } finally {
+      setValidating(prev => ({ ...prev, phone: false }));
+    }
+  };
 
   const handleNext = () => {
     const newErrors: Record<string, string> = {};
@@ -284,6 +373,7 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
                   setErrors(prev => ({ ...prev, nationalId: '' }));
                 }
               }}
+              onBlur={e => validateNationalId(e.target.value)}
               placeholder="ID number"
             />
             <InputError message={errors.nationalId} />
@@ -352,6 +442,7 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
                   setErrors(prev => ({ ...prev, email: '' }));
                 }
               }}
+              onBlur={e => validateEmail(e.target.value)}
               placeholder="john@example.com"
             />
             <InputError message={errors.email} />
@@ -378,6 +469,7 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
                   setErrors(prev => ({ ...prev, phone: '' }));
                 }
               }}
+              onBlur={e => validatePhone(e.target.value)}
               placeholder="+254 700 000 000"
             />
             <InputError message={errors.phone} />

@@ -22,5 +22,10 @@ Route::get('locations/counties', [LocationController::class, 'counties']);
 Route::get('locations/subcounties', [LocationController::class, 'subcounties']);
 Route::get('locations/wards', [LocationController::class, 'wards']);
 
+// Validation API routes
+Route::post('validate/email', [LocationController::class, 'validateEmail']);
+Route::post('validate/national-id', [LocationController::class, 'validateNationalId']);
+Route::post('validate/phone', [LocationController::class, 'validatePhone']);
+
 // QR Code scanning
 Route::post('scan', [ScanController::class, 'scan']);
