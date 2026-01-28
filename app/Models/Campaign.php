@@ -52,6 +52,11 @@ class Campaign extends Model
         return $this->belongsTo(Dcd::class);
     }
 
+    public function adminActions()
+    {
+        return $this->hasMany(AdminAction::class);
+    }
+
     public function scans()
     {
         return $this->hasMany(Scan::class);

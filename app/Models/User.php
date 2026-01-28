@@ -85,6 +85,11 @@ class User extends Authenticatable
         return $this->hasOne(Dcd::class);
     }
 
+    public function adminActions()
+    {
+        return $this->hasMany(AdminAction::class, 'admin_id');
+    }
+
     public function referralsMade()
     {
         return $this->hasMany(Referral::class, 'referrer_id');
