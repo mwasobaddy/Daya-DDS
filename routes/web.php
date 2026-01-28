@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DaController;
 use App\Http\Controllers\DcdController;
 use Illuminate\Support\Facades\Route;
@@ -24,8 +25,6 @@ Route::get('dcd/', [DcdController::class, 'index'])->name('dcd.index');
 Route::get('dcd/register', [DcdController::class, 'register'])->name('dcd.register');
 Route::post('dcd/register', [DcdController::class, 'store'])->name('dcd.store');
 
-// Client routes
-use App\Http\Controllers\ClientController;
 Route::get('client/', [ClientController::class, 'index'])->name('client.index');
 Route::get('client/register', [ClientController::class, 'register'])->name('client.register');
 Route::post('client/register', [ClientController::class, 'store'])->name('client.store');
