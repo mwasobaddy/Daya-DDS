@@ -3,33 +3,41 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreClientRequest;
+use App\Services\ClientService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class ClientController extends Controller
 {
+    public function __construct(
+        private ClientService $clientService
+    ) {}
+
     public function index(Request $request)
     {
+        // For Inertia web
         if ($request->wantsJson()) {
             return response()->json([
-                'video_url' => 'https://youtu.be/McXEUnrJ3-E',
-                'title' => 'Create a Campaign',
-                'description' => 'Create targeted campaigns and reach customers through the DCD network.'
+                'video_url' => 'https://www.youtube.com/embed/KBSQg6WPxtU',
+                'title' => 'Launch Your Digital Campaign',
+                'description' => 'Discover how the Daya ecosystem empowers you to distribute digital content and reach targeted audiences.',
             ]);
         }
 
         return Inertia::render('client/index', [
-            'videoUrl' => 'https://youtu.be/McXEUnrJ3-E',
-            'title' => 'Create a Campaign',
-            'description' => 'Create targeted campaigns and reach customers through the DCD network.'
+            'videoUrl' => 'https://www.youtube.com/embed/KBSQg6WPxtU',
+            'title' => 'Launch Your Digital Campaign',
+            'description' => 'Discover how the Daya ecosystem empowers you to distribute digital content and reach targeted audiences.',
         ]);
     }
 
     public function register(Request $request)
     {
+        // For Inertia web
         if ($request->wantsJson()) {
-            return response()->json(['form' => 'client/register']);
+            return response()->json([
+                'form' => 'client/register',
+            ]);
         }
 
         return Inertia::render('client/register');
@@ -38,21 +46,20 @@ class ClientController extends Controller
     public function store(StoreClientRequest $request)
     {
         try {
-            // TODO: Implement client campaign creation with a service
-            // $campaign = $this->clientService->createCampaign($request->validated());
+            $client = $this->clientService->createClient($request->validated());
 
             return redirect()
                 ->route('client.register')
-                ->with('success', 'Campaign submitted successfully!');
+                ->with('success', 'Client campaign registration submitted successfully!');
         } catch (\Exception $e) {
-            Log::error('Client campaign submission failed', [
+            \Log::error('Client registration failed', [
                 'error' => $e->getMessage(),
                 'data' => $request->validated(),
             ]);
 
             return back()
                 ->withInput()
-                ->withErrors(['error' => 'Campaign submission failed. Please try again.']);
+                ->withErrors(['error' => 'Registration failed. Please try again.']);
         }
     }
 }
