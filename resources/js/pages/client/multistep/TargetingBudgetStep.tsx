@@ -19,6 +19,8 @@ interface LocationOption {
   id: number;
   name: string;
   code: string;
+  currency_symbol?: string;
+  currency_code?: string;
 }
 
 const safetyPreferences = ['Kids Appropriate', 'Teen Appropriate (13+)', 'Adult Content (18+)', 'No restrictions'];
@@ -56,6 +58,62 @@ const businessTypeGroups = [
   },
 ];
 
+const businessTypeLabels: Record<string, string> = {
+  'kiosk_duka': 'Kiosk/Duka',
+  'mini_supermarket': 'Mini Supermarket',
+  'wholesale_shop': 'Wholesale Shop',
+  'hardware_store': 'Hardware Store',
+  'agrovet': 'Agrovet',
+  'butchery': 'Butchery',
+  'boutique': 'Boutique',
+  'electronics': 'Electronics',
+  'stationery': 'Stationery',
+  'general_store': 'General Store',
+  'salon': 'Salon',
+  'barber_shop': 'Barber Shop',
+  'beauty_parlour': 'Beauty Parlour',
+  'tailor': 'Tailor',
+  'uber': 'Uber',
+  'shoe_repair': 'Shoe Repair',
+  'photography_studio': 'Photography Studio',
+  'printing_cyber': 'Printing/Cyber',
+  'laundry': 'Laundry',
+  'cafe': 'Cafe',
+  'restaurant': 'Restaurant',
+  'fast_food': 'Fast Food',
+  'mama_mboga': 'Mama Mboga',
+  'milk_atm': 'Milk ATM',
+  'bakery': 'Bakery',
+  'mobile_money': 'Mobile Money',
+  'bank_agent': 'Bank Agent',
+  'bill_payment': 'Bill Payment',
+  'betting_shop': 'Betting Shop',
+  'boda_boda': 'Boda Boda',
+  'matatu_sacco': 'Matatu Sacco',
+  'fuel_station': 'Fuel Station',
+  'car_wash': 'Car Wash',
+  'church': 'Church',
+  'school_canteen': 'School Canteen',
+  'bar_lounge': 'Bar/Lounge',
+  'pharmacy': 'Pharmacy',
+  'clinic': 'Clinic',
+  'other': 'Other',
+};
+
+const campaignObjectiveCredits: Record<string, number> = {
+  'music': 1,
+  'movies': 1,
+  'games': 1,
+  'surveys': 5,
+  'product_promotion': 5,
+  'events': 5,
+  'apartment_listing': 5,
+  'app_downloads': 10,
+  'product_launch': 10,
+  'education_learning': 10,
+  'civic_political': 10,
+};
+
 export default function TargetingBudgetStep({ value, onChange, onNext, onBack }: Props) {
   const [selectedSafetyPreferences, setSelectedSafetyPreferences] = useState<string[]>(Array.isArray(value.selectedSafetyPreferences) ? value.selectedSafetyPreferences as string[] : []);
   const [selectedBusinessTypes, setSelectedBusinessTypes] = useState<string[]>(Array.isArray(value.selectedBusinessTypes) ? value.selectedBusinessTypes as string[] : []);
@@ -63,7 +121,7 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
   const [totalBudget, setTotalBudget] = useState(String(value.totalBudget ?? ''));
 
   // User's country from account setup
-  const [userCountry, setUserCountry] = useState(String(value.country ?? ''));
+  const [userCountry] = useState(String(value.country ?? ''));
   const [currencySymbol, setCurrencySymbol] = useState('KES'); // Default to KES
 
   // Location targeting states
@@ -87,12 +145,12 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
       try {
         const response = await fetch('/api/locations/countries');
         if (response.ok) {
-          const data = await response.json();
+          const data: LocationOption[] = await response.json();
           setCountries(data);
 
           // Set currency symbol based on user's country from account setup
           if (userCountry) {
-            const userCountryData = data.find((country: any) => String(country.id) === userCountry);
+            const userCountryData = data.find((country: LocationOption) => String(country.id) === userCountry);
             if (userCountryData) {
               setCurrencySymbol(userCountryData.currency_symbol || userCountryData.currency_code || 'KES');
             }
@@ -108,7 +166,9 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
   // Fetch counties when target country changes
   useEffect(() => {
     if (!targetCountry) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCounties([]);
+       
       setTargetCounty('');
       return;
     }
@@ -117,7 +177,7 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
       try {
         const response = await fetch(`/api/locations/counties?country_id=${targetCountry}`);
         if (response.ok) {
-          const data = await response.json();
+          const data: LocationOption[] = await response.json();
           setCounties(data);
         }
       } catch (error) {
@@ -130,7 +190,9 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
   // Fetch subcounties when target county changes
   useEffect(() => {
     if (!targetCounty) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSubcounties([]);
+       
       setTargetSubcounty('');
       return;
     }
@@ -139,7 +201,7 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
       try {
         const response = await fetch(`/api/locations/subcounties?county_id=${targetCounty}`);
         if (response.ok) {
-          const data = await response.json();
+          const data: LocationOption[] = await response.json();
           setSubcounties(data);
         }
       } catch (error) {
@@ -152,7 +214,9 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
   // Fetch wards when target subcounty changes
   useEffect(() => {
     if (!targetSubcounty) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setWards([]);
+       
       setTargetWard('');
       return;
     }
@@ -161,7 +225,7 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
       try {
         const response = await fetch(`/api/locations/wards?subcounty_id=${targetSubcounty}`);
         if (response.ok) {
-          const data = await response.json();
+          const data: LocationOption[] = await response.json();
           setWards(data);
         }
       } catch (error) {
@@ -224,6 +288,16 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
     }
     if (!totalBudget) newErrors.totalBudget = 'Total budget is required.';
     if (parseFloat(totalBudget) <= 0) newErrors.totalBudget = 'Total budget must be greater than 0.';
+    if (!targetCountry) newErrors.targetCountry = 'Country is required.';
+
+    // Check if maximum scans would be 0 or less
+    if (totalBudget && value.campaignObjective) {
+      const creditCost = campaignObjectiveCredits[String(value.campaignObjective)] || 1;
+      const maxScans = Math.floor(parseFloat(totalBudget) / creditCost);
+      if (maxScans <= 0) {
+        newErrors.totalBudget = 'Your budget is too low for this campaign objective. Please increase your budget to allow at least 1 scan.';
+      }
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -285,11 +359,13 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
         </div>
 
         {/* Location Targeting */}
-        <div className="space-y-4">
-          <Label className="text-base font-semibold">Location Targeting (Optional)</Label>
+        <div className="grid gap-4">
+          <Label className="text-base font-semibold">Location Targeting</Label>
 
           <div className="grid gap-2">
-            <Label htmlFor="targetCountry">Country</Label>
+            <Label htmlFor="targetCountry">
+              Country <span className="text-red-500">*</span>
+            </Label>
             <Select value={targetCountry} onValueChange={setTargetCountry}>
               <SelectTrigger className="w-full px-4 py-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none">
                 <SelectValue placeholder="Select target country" />
@@ -303,7 +379,8 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
               </SelectContent>
             </Select>
           </div>
-
+          <InputError message={errors.targetCountry} />
+          
           {targetCountry && (
             <div className="grid gap-2">
               <Label htmlFor="targetCounty">
@@ -344,6 +421,7 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
             </div>
           )}
 
+          
           {targetSubcounty && (
             <div className="grid gap-2">
               <Label htmlFor="targetWard">Ward</Label>
@@ -395,7 +473,7 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
                         onCheckedChange={(checked) => handleBusinessTypeChange(type, checked as boolean)}
                         className="border-gray-400 dark:border-gray-50/30"
                       />
-                      <span>{type}</span>
+                      <span>{businessTypeLabels[type] || type}</span>
                     </Label>
                   ))}
                 </div>
@@ -434,7 +512,7 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
             id="totalBudget"
             type="number"
             min="0"
-            step="0.01"
+            step="1"
             value={totalBudget}
             onChange={e => {
               setTotalBudget(e.target.value);
@@ -442,10 +520,36 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
                 setErrors(prev => ({ ...prev, totalBudget: '' }));
               }
             }}
-            placeholder="5000.00"
+            placeholder="5000"
           />
           <InputError message={errors.totalBudget} />
         </div>
+
+        {/* Campaign Budget Breakdown */}
+        {totalBudget && value.campaignObjective && (
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">
+              Campaign Budget Breakdown
+            </h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-blue-800 dark:text-blue-200">Cost per scan:</span>
+                <span className="font-medium text-blue-900 dark:text-blue-100">
+                  {((campaignObjectiveCredits[String(value.campaignObjective)] || 1)).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-blue-800 dark:text-blue-200">Maximum scans:</span>
+                <span className="font-medium text-blue-900 dark:text-blue-100">
+                  {Math.floor(parseFloat(totalBudget) / (campaignObjectiveCredits[String(value.campaignObjective)] || 1))} verified scans
+                </span>
+              </div>
+              <p className="text-xs text-blue-700 dark:text-blue-300 mt-3 italic">
+                Your campaign will automatically complete when the scan limit is reached.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex justify-between pt-4">

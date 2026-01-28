@@ -53,15 +53,20 @@ const musicGenres = [
 ];
 const campaignObjectives = [
   { id: 'music_promotion', label: 'Music Promotion', description: 'Promoting audio content including songs, albums, and playlists' },
+  { id: 'movies', label: 'Movies', description: 'Film content including movies, documentaries, and cinematic works' },
+  { id: 'games', label: 'Games', description: 'Video games, mobile games, and interactive content' },
+  { id: 'surveys', label: 'Surveys', description: 'Market research, feedback collection, and data gathering tools' },
+  { id: 'product_promotion', label: 'Product Promotion', description: 'Promoting products, goods, and merchandise through targeted campaigns' },
+  { id: 'events_promotions', label: 'Events & Promotions', description: 'Event marketing, promotional campaigns, and special offers' },
+  { id: 'apartment_listing', label: 'Apartment Listing', description: 'Promoting real estate listings, property rentals, and housing opportunities' },
   { id: 'app_downloads', label: 'App Downloads', description: 'Promoting apps such as mobile, IOS and PC applications, games, and software' },
   { id: 'product_launch', label: 'Product Launch', description: 'Promoting a new product announcements and launch campaigns' },
-  { id: 'events_promotions', label: 'Events & Promotions', description: 'Event marketing, promotional campaigns, and special offers' },
-  { id: 'brand_awareness', label: 'Brand Awareness', description: 'Promoting brand recognition and visibility' },
-  { id: 'surveys', label: 'Surveys', description: 'Market research, feedback collection, and data gathering tools' },
+  { id: 'education_learning', label: 'Education & Learning', description: 'Educational content, courses, tutorials, and learning materials' },
+  { id: 'civic_political', label: 'Civic & Political', description: 'Community engagement, political campaigns, and civic initiatives' },
 ];
 
 export default function CampaignDetailsStep({ value, onChange, onNext, onBack }: Props) {
-  const [campaignType, setCampaignType] = useState(String(value.campaignType ?? ''));
+  const [accountType, setAccountType] = useState(String(value.accountType ?? ''));
   const [selectedMusicGenres, setSelectedMusicGenres] = useState<string[]>(
     Array.isArray(value.selectedMusicGenres) ? value.selectedMusicGenres : []
   );
@@ -72,6 +77,8 @@ export default function CampaignDetailsStep({ value, onChange, onNext, onBack }:
   const [startDate, setStartDate] = useState(String(value.startDate ?? ''));
   const [endDate, setEndDate] = useState(String(value.endDate ?? ''));
   const [targetAudience, setTargetAudience] = useState(String(value.targetAudience ?? ''));
+  const [digitalProductLink, setDigitalProductLink] = useState(String(value.digitalProductLink ?? ''));
+  const [explainerVideoLink, setExplainerVideoLink] = useState(String(value.explainerVideoLink ?? ''));
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -105,12 +112,13 @@ export default function CampaignDetailsStep({ value, onChange, onNext, onBack }:
   const handleNext = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!campaignType) newErrors.campaignType = 'Campaign type is required.';
-    if ((campaignType === 'Artist' || campaignType === 'Label') && selectedMusicGenres.length === 0) newErrors.selectedMusicGenres = 'Please select at least one music genre for Artist and Label campaigns.';
+    if (!accountType) newErrors.accountType = 'Campaign type is required.';
+    if ((accountType === 'Artist' || accountType === 'Label') && selectedMusicGenres.length === 0) newErrors.selectedMusicGenres = 'Please select at least one music genre for Artist and Label campaigns.';
     if (!campaignObjective) newErrors.campaignObjective = 'Campaign objective is required.';
     if (!campaignName) newErrors.campaignName = 'Campaign name is required.';
     if (!campaignDescription) newErrors.campaignDescription = 'Campaign description is required.';
     if (campaignDescription && campaignDescription.length < 50) newErrors.campaignDescription = 'Campaign description must be at least 50 characters.';
+    if (!digitalProductLink) newErrors.digitalProductLink = 'Digital product link is required.';
     if (!startDate) newErrors.startDate = 'Start date is required.';
     if (!endDate) newErrors.endDate = 'End date is required.';
     if (!targetAudience) newErrors.targetAudience = 'Target audience is required.';
@@ -134,16 +142,19 @@ export default function CampaignDetailsStep({ value, onChange, onNext, onBack }:
 
     setErrors({});
     setLoading(true);
-    onChange({
-      campaignType,
-      selectedMusicGenres: (campaignType === 'Artist' || campaignType === 'Label') ? selectedMusicGenres : [],
+    const data: Record<string, unknown> = {
+      accountType,
       campaignObjective,
       campaignName,
       campaignDescription,
+      digitalProductLink,
+      explainerVideoLink,
       startDate,
       endDate,
       targetAudience,
-    });
+      selectedMusicGenres: (accountType === 'Artist' || accountType === 'Label') ? selectedMusicGenres : undefined,
+    };
+    onChange(data);
     onNext();
   };
 
@@ -186,24 +197,24 @@ export default function CampaignDetailsStep({ value, onChange, onNext, onBack }:
               <div key={type} className="flex items-center space-x-2">
                 <input
                   type="radio"
-                  id={`campaign-type-${type}`}
-                  name="campaignType"
+                  id={`account-type-${type}`}
+                  name="accountType"
                   value={type}
-                  checked={campaignType === type}
+                  checked={accountType === type}
                   onChange={(e) => {
-                    setCampaignType(e.target.value);
+                    setAccountType(e.target.value);
                     // Reset music genres when campaign type changes
                     if (e.target.value !== 'Artist' && e.target.value !== 'Label') {
                       setSelectedMusicGenres([]);
                     }
-                    if (errors.campaignType) {
-                      setErrors(prev => ({ ...prev, campaignType: '' }));
+                    if (errors.accountType) {
+                      setErrors(prev => ({ ...prev, accountType: '' }));
                     }
                   }}
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 />
                 <Label
-                  htmlFor={`campaign-type-${type}`}
+                  htmlFor={`account-type-${type}`}
                   className="text-sm font-medium cursor-pointer"
                 >
                   {type}
@@ -211,11 +222,11 @@ export default function CampaignDetailsStep({ value, onChange, onNext, onBack }:
               </div>
             ))}
           </div>
-          <InputError message={errors.campaignType} />
+          <InputError message={errors.accountType} />
         </div>
 
         {/* Music Genres - Only show for Artist and Label campaigns */}
-        {(campaignType === 'Artist' || campaignType === 'Label') && (
+        {(accountType === 'Artist' || accountType === 'Label') && (
           <div className="grid gap-4">
             <div>
               <Label className="text-base font-semibold">
@@ -313,6 +324,49 @@ export default function CampaignDetailsStep({ value, onChange, onNext, onBack }:
             {campaignDescription.length}/50 minimum characters
           </div>
           <InputError message={errors.campaignDescription} />
+        </div>
+
+        {/* Digital Product Link */}
+        <div className="grid gap-2">
+          <Label htmlFor="digitalProductLink">
+            Digital Product Link <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="digitalProductLink"
+            type="url"
+            value={digitalProductLink}
+            onChange={e => {
+              setDigitalProductLink(e.target.value);
+              if (errors.digitalProductLink) {
+                setErrors(prev => ({ ...prev, digitalProductLink: '' }));
+              }
+            }}
+            placeholder="https://example.com/your-product"
+          />
+          <InputError message={errors.digitalProductLink} />
+        </div>
+
+        {/* Explainer Video URL */}
+        <div className="grid gap-2">
+          <Label htmlFor="explainerVideoLink">
+            Explainer Video URL
+          </Label>
+          <Input
+            id="explainerVideoLink"
+            type="url"
+            value={explainerVideoLink}
+            onChange={e => {
+              setExplainerVideoLink(e.target.value);
+              if (errors.explainerVideoLink) {
+                setErrors(prev => ({ ...prev, explainerVideoLink: '' }));
+              }
+            }}
+            placeholder="https://youtube.com/watch?v=..."
+          />
+          <p className="text-sm text-muted-foreground">
+            Optional: Add a link to an explainer video for your campaign
+          </p>
+          <InputError message={errors.explainerVideoLink} />
         </div>
 
         {/* Campaign Duration */}

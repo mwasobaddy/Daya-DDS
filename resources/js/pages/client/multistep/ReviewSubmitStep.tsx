@@ -13,13 +13,17 @@ interface Props {
 }
 
 const campaignObjectives = [
-  { id: 'music', label: 'Music', description: 'Audio content including songs, albums, and playlists' },
-  { id: 'games', label: 'Games', description: 'Video games, mobile games, and interactive content' },
-  { id: 'product_launch', label: 'Product Launch', description: 'New product announcements and launch campaigns' },
+  { id: 'music_promotion', label: 'Music Promotion', description: 'Promoting audio content including songs, albums, and playlists' },
+  { id: 'app_downloads', label: 'App Downloads', description: 'Promoting apps such as mobile, IOS and PC applications, games, and software' },
+  { id: 'product_launch', label: 'Product Launch', description: 'Promoting a new product announcements and launch campaigns' },
   { id: 'events_promotions', label: 'Events & Promotions', description: 'Event marketing, promotional campaigns, and special offers' },
-  { id: 'movies', label: 'Movies', description: 'Film content including movies, documentaries, and cinematic works' },
-  { id: 'mobile_apps', label: 'Mobile Apps', description: 'Mobile applications for iOS and Android platforms' },
   { id: 'surveys', label: 'Surveys', description: 'Market research, feedback collection, and data gathering tools' },
+  { id: 'product_promotion', label: 'Product Promotion', description: 'Promoting products, goods, and merchandise through targeted campaigns' },
+  { id: 'apartment_listing', label: 'Apartment Listing', description: 'Promoting real estate listings, property rentals, and housing opportunities' },
+  { id: 'education_learning', label: 'Education & Learning', description: 'Educational content, courses, tutorials, and learning materials' },
+  { id: 'civic_political', label: 'Civic & Political', description: 'Community engagement, political campaigns, and civic initiatives' },
+  { id: 'movies', label: 'Movies', description: 'Film content including movies, documentaries, and cinematic works' },
+  { id: 'games', label: 'Games', description: 'Video games, mobile games, and interactive content' },
 ];
 
 const getCampaignObjectiveLabel = (id: string): string => {
@@ -46,14 +50,19 @@ export default function ReviewSubmitStep({ value, onBack, onEditStep }: Props) {
         county: String(value.county || ''),
         subcounty: String(value.subcounty || ''),
         ward: String(value.ward || ''),
-        campaignType: String(value.campaignType || ''),
-        musicPreference: value.musicPreference ? String(value.musicPreference) : null,
+        accountType: String(value.accountType || ''),
+        selectedMusicGenres: (value.accountType === 'Artist' || value.accountType === 'Label') ? (Array.isArray(value.selectedMusicGenres) ? value.selectedMusicGenres : []) : undefined,
         campaignObjective: String(value.campaignObjective || ''),
         campaignName: String(value.campaignName || ''),
         campaignDescription: String(value.campaignDescription || ''),
-        safetyPreference: String(value.safetyPreference || ''),
+        digitalProductLink: String(value.digitalProductLink || ''),
+        explainerVideoLink: String(value.explainerVideoLink || ''),
+        startDate: String(value.startDate || ''),
+        endDate: String(value.endDate || ''),
+        targetAudience: String(value.targetAudience || ''),
         selectedSafetyPreferences: Array.isArray(value.selectedSafetyPreferences) ? value.selectedSafetyPreferences : [],
         selectedBusinessTypes: Array.isArray(value.selectedBusinessTypes) ? value.selectedBusinessTypes : [],
+        otherBusinessType: String(value.otherBusinessType || ''),
         totalBudget: Number(value.totalBudget || 0),
         targetCountry: value.targetCountry ? String(value.targetCountry) : null,
         targetCounty: value.targetCounty ? String(value.targetCounty) : null,
@@ -81,19 +90,6 @@ export default function ReviewSubmitStep({ value, onBack, onEditStep }: Props) {
       setSubmitError('An unexpected error occurred. Please try again.');
       toast.error('An unexpected error occurred. Please try again.');
     }
-  };
-
-  const formatLocation = (country?: unknown, county?: unknown, subcounty?: unknown, ward?: unknown) => {
-    const countryName = country || 'Not specified';
-    const countyName = county || 'Not specified';
-    const subcountyName = subcounty || 'Not specified';
-    const wardName = ward || 'Not specified';
-
-    if (countryName === 'Not specified') {
-      return 'Not specified';
-    }
-
-    return `${wardName}, ${subcountyName}, ${countyName}, ${countryName}`;
   };
 
   return (
@@ -146,9 +142,18 @@ export default function ReviewSubmitStep({ value, onBack, onEditStep }: Props) {
             </div>
             <div className="md:col-span-2">
               <span className="font-medium text-gray-700 dark:text-neutral-300">Location:</span>
-              <p className="text-gray-600 dark:text-neutral-400">
-                {formatLocation(value.countryName, value.countyName, value.subcountyName, value.wardName)}
-              </p>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {value.countryName ? (
+                  <>
+                    {value.wardName && <Badge variant="secondary">{String(value.wardName)}</Badge>}
+                    {value.subcountyName && <Badge variant="secondary">{String(value.subcountyName)}</Badge>}
+                    {value.countyName && <Badge variant="secondary">{String(value.countyName)}</Badge>}
+                    {value.countryName && <Badge variant="secondary">{String(value.countryName)}</Badge>}
+                  </>
+                ) : (
+                  <p className="text-gray-600 dark:text-neutral-400">Not specified</p>
+                )}
+              </div>
             </div>
           </div>
         </Card>
@@ -173,9 +178,9 @@ export default function ReviewSubmitStep({ value, onBack, onEditStep }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
               <span className="font-medium text-gray-700 dark:text-neutral-300">Campaign Type:</span>
-              <p className="text-gray-600 dark:text-neutral-400">{String(value.campaignType || 'Not provided')}</p>
+              <p className="text-gray-600 dark:text-neutral-400">{String(value.accountType || 'Not provided')}</p>
             </div>
-            {(value.campaignType === 'Artist' || value.campaignType === 'Label') && Array.isArray(value.selectedMusicGenres) && value.selectedMusicGenres.length > 0 && (
+            {(value.accountType === 'Artist' || value.accountType === 'Label') && Array.isArray(value.selectedMusicGenres) && value.selectedMusicGenres.length > 0 && (
               <div>
                 <span className="font-medium text-gray-700 dark:text-neutral-300">Music Genres:</span>
                 <p className="text-gray-600 dark:text-neutral-400">{value.selectedMusicGenres.join(', ')}</p>
@@ -189,9 +194,29 @@ export default function ReviewSubmitStep({ value, onBack, onEditStep }: Props) {
               <span className="font-medium text-gray-700 dark:text-neutral-300">Campaign Name:</span>
               <p className="text-gray-600 dark:text-neutral-400">{String(value.campaignName || 'Not provided')}</p>
             </div>
+            <div>
+              <span className="font-medium text-gray-700 dark:text-neutral-300">Start Date:</span>
+              <p className="text-gray-600 dark:text-neutral-400">{value.startDate ? new Date(String(value.startDate)).toLocaleDateString() : 'Not provided'}</p>
+            </div>
+            <div>
+              <span className="font-medium text-gray-700 dark:text-neutral-300">End Date:</span>
+              <p className="text-gray-600 dark:text-neutral-400">{value.endDate ? new Date(String(value.endDate)).toLocaleDateString() : 'Not provided'}</p>
+            </div>
             <div className="md:col-span-2">
               <span className="font-medium text-gray-700 dark:text-neutral-300">Campaign Description:</span>
               <p className="text-gray-600 dark:text-neutral-400">{String(value.campaignDescription || 'Not provided')}</p>
+            </div>
+            <div>
+              <span className="font-medium text-gray-700 dark:text-neutral-300">Digital Product Link:</span>
+              <p className="text-gray-600 dark:text-neutral-400">{String(value.digitalProductLink || 'Not provided')}</p>
+            </div>
+            <div>
+              <span className="font-medium text-gray-700 dark:text-neutral-300">Explainer Video URL:</span>
+              <p className="text-gray-600 dark:text-neutral-400">{String(value.explainerVideoLink || 'Not provided')}</p>
+            </div>
+            <div className="md:col-span-2">
+              <span className="font-medium text-gray-700 dark:text-neutral-300">Target Audience:</span>
+              <p className="text-gray-600 dark:text-neutral-400">{String(value.targetAudience || 'Not provided')}</p>
             </div>
           </div>
         </Card>
@@ -225,11 +250,18 @@ export default function ReviewSubmitStep({ value, onBack, onEditStep }: Props) {
 
             <div>
               <span className="font-medium text-gray-700 dark:text-neutral-300">Target Location:</span>
-              <p className="text-gray-600 dark:text-neutral-400">
-                {value.targetCountryName
-                  ? formatLocation(value.targetCountryName, value.targetCountyName, value.targetSubcountyName, value.targetWardName)
-                  : 'Not specified (National targeting)'}
-              </p>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {value.targetCountryName ? (
+                  <>
+                    {value.targetWardName && <Badge variant="secondary">{String(value.targetWardName)}</Badge>}
+                    {value.targetSubcountyName && <Badge variant="secondary">{String(value.targetSubcountyName)}</Badge>}
+                    {value.targetCountyName && <Badge variant="secondary">{String(value.targetCountyName)}</Badge>}
+                    {value.targetCountryName && <Badge variant="secondary">{String(value.targetCountryName)}</Badge>}
+                  </>
+                ) : (
+                  <p className="text-gray-600 dark:text-neutral-400">Not specified (National targeting)</p>
+                )}
+              </div>
             </div>
 
             <div>
@@ -237,7 +269,7 @@ export default function ReviewSubmitStep({ value, onBack, onEditStep }: Props) {
               <div className="flex flex-wrap gap-2 mt-1">
                 {Array.isArray(value.selectedBusinessTypes) && value.selectedBusinessTypes.length > 0
                   ? value.selectedBusinessTypes.map((type, index) => (
-                      <Badge key={index} variant="secondary">{String(type)}</Badge>
+                      <Badge variant={'secondary'} key={index}>{String(type)}</Badge>
                     ))
                   : <p className="text-gray-600 dark:text-neutral-400">Not specified</p>
                 }
