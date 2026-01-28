@@ -25,7 +25,7 @@ class StoreClientRequest extends FormRequest
             'companyName' => 'required|string|max:255',
             'contactPerson' => 'required|string|max:255',
             'email' => 'required|email',
-            'phone' => 'required|string|regex:/^\+\d{1,4}\d+$/|unique:client,phone',
+            'phone' => 'required|string|regex:/^\+\d{1,4}\d+$/|min:10|max:15',
             'businessAddress' => 'required|string|max:500',
             'country' => 'required|exists:countries,id',
             'county' => 'nullable|exists:counties,id',

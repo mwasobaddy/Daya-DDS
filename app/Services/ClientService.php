@@ -29,7 +29,12 @@ class ClientService
             // Check if client already exists by email
             $client = Client::where('email', $data['email'])->first();
 
-            if (!$client) {
+            // if the user exists, check if the phone matches and if phone do not match, throw error telling the user ti use previous phone number
+            if ($client && $client->phone !== $data['phone']) {
+                throw new \Exception('A client with this email already exists with a different phone number. Please use the phone number associated with this email or use a different email.');
+            }
+
+            if (! $client) {
                 // Create client record if doesn't exist
                 $client = Client::create([
                     'business_name' => $data['companyName'],
@@ -53,8 +58,8 @@ class ClientService
             // Calculate credits allocated based on currency
             $creditsAllocated = 0;
             if ($currency === 'NGN') {
-                // 1 NGN = 10 credits
-                $creditsAllocated = $data['totalBudget'] * 10;
+                // 10 NGN = 1 credit
+                $creditsAllocated = $data['totalBudget'] / 10;
             } else {
                 // 1 KSH = 1 credit (default for other currencies)
                 $creditsAllocated = $data['totalBudget'];
@@ -93,7 +98,18 @@ class ClientService
                 'scan_used' => 0,
             ]);
 
+            // Notify admins about the new campaign
+            $this->notifyAdmins($client, $campaign);
+
             return $client;
         });
+    }
+
+    private function notifyAdmins(Client $client, Campaign $campaign): void
+    {
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new \App\Notifications\AdminCampaignNotification($client, $campaign));
+        }
     }
 }

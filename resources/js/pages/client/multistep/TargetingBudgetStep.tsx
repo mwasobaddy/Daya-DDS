@@ -114,6 +114,11 @@ const campaignObjectiveCredits: Record<string, number> = {
   'civic_political': 10,
 };
 
+const currencyRates: Record<string, number> = {
+  'KES': 1,
+  'NGN': 10,
+};
+
 export default function TargetingBudgetStep({ value, onChange, onNext, onBack }: Props) {
   const [selectedSafetyPreferences, setSelectedSafetyPreferences] = useState<string[]>(Array.isArray(value.selectedSafetyPreferences) ? value.selectedSafetyPreferences as string[] : []);
   const [selectedBusinessTypes, setSelectedBusinessTypes] = useState<string[]>(Array.isArray(value.selectedBusinessTypes) ? value.selectedBusinessTypes as string[] : []);
@@ -123,6 +128,7 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
   // User's country from account setup
   const [userCountry] = useState(String(value.country ?? ''));
   const [currencySymbol, setCurrencySymbol] = useState('KES'); // Default to KES
+  const [currencyCode, setCurrencyCode] = useState('KES'); // Default to KES
 
   // Location targeting states
   const [targetCountry, setTargetCountry] = useState(String(value.targetCountry ?? ''));
@@ -148,11 +154,12 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
           const data: LocationOption[] = await response.json();
           setCountries(data);
 
-          // Set currency symbol based on user's country from account setup
+          // Set currency symbol and code based on user's country from account setup
           if (userCountry) {
             const userCountryData = data.find((country: LocationOption) => String(country.id) === userCountry);
             if (userCountryData) {
               setCurrencySymbol(userCountryData.currency_symbol || userCountryData.currency_code || 'KES');
+              setCurrencyCode(userCountryData.currency_code || 'KES');
             }
           }
         }
@@ -241,6 +248,9 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
     } else {
       setSelectedBusinessTypes(prev => prev.filter(type => type !== businessType));
     }
+    if (errors.businessTypes) {
+      setErrors(prev => ({ ...prev, businessTypes: '' }));
+    }
   };
 
   const allBusinessTypes = businessTypeGroups.flatMap(group => group.types);
@@ -293,7 +303,8 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
     // Check if maximum scans would be 0 or less
     if (totalBudget && value.campaignObjective) {
       const creditCost = campaignObjectiveCredits[String(value.campaignObjective)] || 1;
-      const maxScans = Math.floor(parseFloat(totalBudget) / creditCost);
+      const localCostPerScan = creditCost * (currencyRates[currencyCode] || 1);
+      const maxScans = Math.floor(parseFloat(totalBudget) / localCostPerScan);
       if (maxScans <= 0) {
         newErrors.totalBudget = 'Your budget is too low for this campaign objective. Please increase your budget to allow at least 1 scan.';
       }
@@ -366,7 +377,12 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
             <Label htmlFor="targetCountry">
               Country <span className="text-red-500">*</span>
             </Label>
-            <Select value={targetCountry} onValueChange={setTargetCountry}>
+            <Select value={targetCountry} onValueChange={(value) => {
+              setTargetCountry(value);
+              if (errors.targetCountry) {
+                setErrors(prev => ({ ...prev, targetCountry: '' }));
+              }
+            }}>
               <SelectTrigger className="w-full px-4 py-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none">
                 <SelectValue placeholder="Select target country" />
               </SelectTrigger>
@@ -526,7 +542,7 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
         </div>
 
         {/* Campaign Budget Breakdown */}
-        {totalBudget && value.campaignObjective && (
+        {totalBudget && !!value.campaignObjective && (
           <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">
               Campaign Budget Breakdown
@@ -535,13 +551,13 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
               <div className="flex justify-between">
                 <span className="text-blue-800 dark:text-blue-200">Cost per scan:</span>
                 <span className="font-medium text-blue-900 dark:text-blue-100">
-                  {((campaignObjectiveCredits[String(value.campaignObjective)] || 1)).toLocaleString()}
+                  {((campaignObjectiveCredits[String(value.campaignObjective)] || 1) * (currencyRates[currencyCode] || 1)).toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-blue-800 dark:text-blue-200">Maximum scans:</span>
                 <span className="font-medium text-blue-900 dark:text-blue-100">
-                  {Math.floor(parseFloat(totalBudget) / (campaignObjectiveCredits[String(value.campaignObjective)] || 1))} verified scans
+                  {Math.floor(parseFloat(totalBudget) / ((campaignObjectiveCredits[String(value.campaignObjective)] || 1) * (currencyRates[currencyCode] || 1)))} verified scans
                 </span>
               </div>
               <p className="text-xs text-blue-700 dark:text-blue-300 mt-3 italic">
