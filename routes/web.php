@@ -29,6 +29,12 @@ Route::get('client/', [ClientController::class, 'index'])->name('client.index');
 Route::get('client/register', [ClientController::class, 'register'])->name('client.register');
 Route::post('client/register', [ClientController::class, 'store'])->name('client.store');
 
+// Admin routes for campaign approval
+Route::get('admin/campaign/{campaign}/approve', [ClientController::class, 'approveCampaign'])->name('admin.campaign.approve')->middleware('signed');
+Route::post('admin/campaign/{campaign}/approve', [ClientController::class, 'processApprove'])->name('admin.campaign.process-approve')->middleware('signed');
+Route::get('admin/campaign/{campaign}/reject', [ClientController::class, 'rejectCampaign'])->name('admin.campaign.reject')->middleware('signed');
+Route::post('admin/campaign/{campaign}/reject', [ClientController::class, 'processReject'])->name('admin.campaign.process-reject')->middleware('signed');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
