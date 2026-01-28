@@ -12,12 +12,6 @@ Route::get('da/register', [DaController::class, 'register']);
 Route::get('dcd/', [DcdController::class, 'index']);
 Route::get('dcd/register', [DcdController::class, 'register']);
 
-// Client API routes
-use App\Http\Controllers\ClientController;
-Route::get('client/', [ClientController::class, 'index']);
-Route::get('client/register', [ClientController::class, 'register']);
-Route::post('client/register', [ClientController::class, 'store']);
-
 // Location API routes
 Route::get('locations/countries', [LocationController::class, 'countries']);
 Route::get('locations/counties', [LocationController::class, 'counties']);
