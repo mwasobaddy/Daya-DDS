@@ -111,20 +111,9 @@ export default function ContentPreferenceStep({ value, onChange, onNext, onBack 
   };
 
   const handleAudienceChange = (audience: string, checked: boolean) => {
-    let newSelected = [...selectedAudiences];
-
-    if (checked) {
-      // Prevent selecting both Kids Appropriate and Adult Content (18+)
-      if (audience === 'Kids Appropriate' && selectedAudiences.includes('Adult Content (18+)')) {
-        return; // Don't allow this selection
-      }
-      if (audience === 'Adult Content (18+)' && selectedAudiences.includes('Kids Appropriate')) {
-        return; // Don't allow this selection
-      }
-      newSelected = [...selectedAudiences, audience];
-    } else {
-      newSelected = selectedAudiences.filter(a => a !== audience);
-    }
+    const newSelected = checked
+      ? [...selectedAudiences, audience]
+      : selectedAudiences.filter(a => a !== audience);
 
     setSelectedAudiences(newSelected);
 
@@ -147,10 +136,6 @@ export default function ContentPreferenceStep({ value, onChange, onNext, onBack 
 
     if (selectedAudiences.length === 0) {
       newErrors.selectedAudiences = 'Please select at least one target audience.';
-    }
-
-    if (selectedAudiences.includes('Kids Appropriate') && selectedAudiences.includes('Adult Content (18+)')) {
-      newErrors.selectedAudiences = 'You cannot select both Kids Appropriate and Adult Content (18+) audiences.';
     }
 
     setErrors(newErrors);
@@ -244,7 +229,7 @@ export default function ContentPreferenceStep({ value, onChange, onNext, onBack 
             <Label className="text-base font-semibold">
               Target Audience <span className="text-red-500">*</span>
             </Label>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               Select your primary target audiences
             </p>
           </div>
