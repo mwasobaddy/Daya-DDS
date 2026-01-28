@@ -69,9 +69,7 @@ class LocationController extends Controller
         ]);
 
         $email = $request->input('email');
-        $exists = User::where('email', $email)->exists() ||
-                 Da::where('email', $email)->exists() ||
-                 Dcd::where('email', $email)->exists();
+        $exists = User::where('email', $email)->exists();
 
         return response()->json([
             'valid' => !$exists,
@@ -86,8 +84,7 @@ class LocationController extends Controller
         ]);
 
         $nationalId = $request->input('national_id');
-        $exists = Da::where('national_id', $nationalId)->exists() ||
-                 Dcd::where('national_id', $nationalId)->exists();
+        $exists = User::where('national_id', $nationalId)->exists();
 
         return response()->json([
             'valid' => !$exists,
@@ -102,9 +99,7 @@ class LocationController extends Controller
         ]);
 
         $phone = $request->input('phone');
-        $exists = User::where('phone', $phone)->exists() ||
-                 Da::where('phone', $phone)->exists() ||
-                 Dcd::where('phone', $phone)->exists();
+        $exists = User::where('phone', $phone)->exists();
 
         return response()->json([
             'valid' => !$exists,
