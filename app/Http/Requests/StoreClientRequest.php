@@ -37,7 +37,6 @@ class StoreClientRequest extends FormRequest
             'campaignObjective' => 'required|in:music_promotion,app_downloads,product_launch,events_promotions,brand_awareness,surveys',
             'campaignName' => 'required|string|max:255',
             'campaignDescription' => 'required|string|min:50|max:2000',
-            'campaignDuration' => 'required|integer|min:1|max:365',
             'startDate' => 'required|date|after_or_equal:today',
             'endDate' => 'required|date|after:startDate',
             'targetAudience' => 'required|string|min:50|max:2000',

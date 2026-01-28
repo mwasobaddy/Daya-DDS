@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -76,6 +76,19 @@ export default function CampaignDetailsStep({ value, onChange, onNext, onBack }:
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
+  // Auto-calculate campaign duration when start or end dates change
+  useEffect(() => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end dates
+      setCampaignDuration(diffDays.toString());
+    } else {
+      setCampaignDuration('');
+    }
+  }, [startDate, endDate]);
+
   const handleMusicGenreChange = (genre: string, checked: boolean) => {
     const newSelected = checked
       ? [...selectedMusicGenres, genre]
@@ -97,7 +110,6 @@ export default function CampaignDetailsStep({ value, onChange, onNext, onBack }:
     if (!campaignName) newErrors.campaignName = 'Campaign name is required.';
     if (!campaignDescription) newErrors.campaignDescription = 'Campaign description is required.';
     if (campaignDescription && campaignDescription.length < 50) newErrors.campaignDescription = 'Campaign description must be at least 50 characters.';
-    if (!campaignDuration) newErrors.campaignDuration = 'Campaign duration is required.';
     if (!startDate) newErrors.startDate = 'Start date is required.';
     if (!endDate) newErrors.endDate = 'End date is required.';
     if (!targetAudience) newErrors.targetAudience = 'Target audience is required.';
@@ -127,7 +139,6 @@ export default function CampaignDetailsStep({ value, onChange, onNext, onBack }:
       campaignObjective,
       campaignName,
       campaignDescription,
-      campaignDuration,
       startDate,
       endDate,
       targetAudience,
@@ -306,23 +317,19 @@ export default function CampaignDetailsStep({ value, onChange, onNext, onBack }:
         {/* Campaign Duration */}
         <div className="grid gap-2">
           <Label htmlFor="campaignDuration">
-            Campaign Duration (Days) <span className="text-red-500">*</span>
+            Campaign Duration (Days)
           </Label>
           <Input
             id="campaignDuration"
             type="number"
-            min="1"
-            max="365"
             value={campaignDuration}
-            onChange={e => {
-              setCampaignDuration(e.target.value);
-              if (errors.campaignDuration) {
-                setErrors(prev => ({ ...prev, campaignDuration: '' }));
-              }
-            }}
-            placeholder="30"
+            disabled
+            placeholder="Auto-calculated from dates"
+            className="bg-gray-50 dark:bg-gray-800 cursor-not-allowed"
           />
-          <InputError message={errors.campaignDuration} />
+          <p className="text-sm text-muted-foreground">
+            Duration is automatically calculated from start and end dates
+          </p>
         </div>
 
         {/* Start Date and End Date */}
