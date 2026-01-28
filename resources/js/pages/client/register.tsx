@@ -1,76 +1,152 @@
+import { User, Target, DollarSign, CheckCircle, BadgeCheck } from 'lucide-react';
 import React, { useState } from 'react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import LeftStepIndicator from '../components/LeftStepIndicator';
+import TopStepIndicator from '../components/TopStepIndicator';
 import AccountSetupStep from './multistep/AccountSetupStep';
 import CampaignDetailsStep from './multistep/CampaignDetailsStep';
-import TargetingBudgetStep from './multistep/TargetingBudgetStep';
 import ReviewSubmitStep from './multistep/ReviewSubmitStep';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import TargetingBudgetStep from './multistep/TargetingBudgetStep';
 
-export default function ClientRegister() {
-  const [currentStep, setCurrentStep] = useState<number>(0);
-  const [formData, setFormData] = useState<Record<string, any>>({
-    // step 1
-    businessName: '',
-    fullName: '',
-    email: '',
-    phone: '',
-    country: '',
-    // step 2
-    campaignTitle: '',
-    accountType: '',
-    musicalGenres: [],
-    digitalProductLink: '',
-    explainerVideo: '',
-    campaignObjective: '',
-    budget: '',
-    // step 3
-    contentSafety: [],
-    targetCountry: '',
-    county: '',
-    subcounty: '',
-    ward: '',
-    state: '',
-    lga: '',
-    businessTypeTargeting: [],
-    campaignStart: '',
-    campaignEnd: '',
-    targetAudience: '',
-    keyObjectives: '',
-  });
+const steps = [
+	{
+		number: 0,
+		title: 'Account Setup',
+		description: 'Set up your business details',
+		icon: User,
+	},
+	{
+		number: 1,
+		title: 'Campaign Details',
+		description: 'Define your campaign objectives',
+		icon: Target,
+	},
+	{
+		number: 2,
+		title: 'Targeting & Budget',
+		description: 'Set your audience and budget',
+		icon: DollarSign,
+	},
+	{
+		number: 3,
+		title: 'Review & Submit',
+		description: 'Review your campaign and submit',
+		icon: CheckCircle,
+	},
+];
 
-  const nextStep = () => setCurrentStep((s) => Math.min(s + 1, 3));
-  const prevStep = () => setCurrentStep((s) => Math.max(s - 1, 0));
+export default function ClientSignup() {
+	const [currentStep, setCurrentStep] = useState(0);
+	const [formData, setFormData] = useState<Record<string, unknown>>({});
 
-  const handleChange = (changes: Record<string, any>) => {
-    setFormData((prev) => ({ ...prev, ...changes }));
-  };
+	const nextStep = () =>
+		setCurrentStep((s) => Math.min(s + 1, steps.length - 1));
+	const prevStep = () => setCurrentStep((s) => Math.max(s - 1, 0));
 
-  return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-neutral-900 text-slate-900 selection:bg-indigo-100">
-      <div className="relative max-w-4xl mx-auto py-12 px-6 lg:px-8">
-        <Card className="p-6">
-          {currentStep === 0 && (
-            <AccountSetupStep value={formData} onChange={handleChange} onNext={nextStep} />
-          )}
+	const updateForm = (data: Record<string, unknown>) =>
+		setFormData((prev) => ({ ...prev, ...data }));
 
-          {currentStep === 1 && (
-            <CampaignDetailsStep value={formData} onChange={handleChange} onNext={nextStep} onBack={prevStep} />
-          )}
+	return (
+		<div className="min-h-screen bg-zinc-50 dark:bg-neutral-900 py-8 px-4">
+			{/* Header */}
+			<div className="mb-8 text-center">
+				<h1 className="mb-2 text-3xl font-bold">
+					Client Campaign Registration
+				</h1>
+			</div>
+			<div className="max-w-7xl mx-auto grid grid-cols-7 gap-8">
+				{/* Top */}
+				<Card className="lg:hidden shadow-xl col-span-7 p-0 pt-3 bg-linear-to-t dark:from-neutral-900 dark:to-neutral-800 from-green-50 to-blue-50 dark:border-neutral-700 border rounded-xl">
+					<TopStepIndicator
+						steps={steps}
+						currentStep={currentStep}
+					/>
+				</Card>
 
-          {currentStep === 2 && (
-            <TargetingBudgetStep value={formData} onChange={handleChange} onNext={nextStep} onBack={prevStep} />
-          )}
+				{/* Left Card - Progress and Welcome */}
+				<Card className="hidden lg:block shadow-xl col-span-7 lg:col-span-3 px-8 bg-linear-to-t dark:from-neutral-900 dark:to-neutral-800 from-green-50 to-blue-50 dark:border-neutral-700 border rounded-xl">
+					<div className="flex gap-4 mb-8 pt-6 items-center">
+						<div className="flex justify-center mb-4">
+							<div className="h-8 w-8 bg-linear-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+								<BadgeCheck className="h-8 w-8 text-white" />
+							</div>
+						</div>
+						<div>
+							<h1 className="text-xl font-bold mb-0">
+								Launch Your Campaign!
+							</h1>
+							<p className="text-muted-foreground">
+								Create targeted campaigns in just a few steps
+							</p>
+							<p className="text-muted-foreground">
+								Reach your audience through our network of locations
+							</p>
+						</div>
+					</div>
+					<div>
+						<LeftStepIndicator
+							steps={steps}
+							currentStep={currentStep}
+						/>
+					</div>
+				</Card>
 
-          {currentStep === 3 && (
-            <ReviewSubmitStep value={formData} onBack={prevStep} />
-          )}
+				{/* Right Card - Form Content */}
+				<Card className="col-span-7 lg:col-span-4 bg-transparent border-0 shadow-none">
+					<CardHeader>
+						<CardTitle>
+							<p className='text-md uppercase mb-2 font-black! text-blue-800 dark:text-blue-400'>
+								STEP {currentStep + 1} OF {steps.length}
+							</p>
+							<h2 className='text-2xl'>
+								{steps[currentStep].title}
+							</h2>
+							<div className='h-1 bg-linear-to-r from-green-500 to-blue-500 rounded-full mb-2 w-24'>
+							</div>
+						</CardTitle>
+						<CardDescription>
+							{steps[currentStep].description}
+						</CardDescription>
+					</CardHeader>
 
-          <div className="mt-6 flex justify-between">
-            <Button variant="ghost" onClick={prevStep} disabled={currentStep === 0}>Back</Button>
-            <Button onClick={() => (currentStep < 3 ? nextStep() : null)}>{currentStep < 3 ? 'Next' : 'Submit'}</Button>
-          </div>
-        </Card>
-      </div>
-    </div>
-  );
+					<CardContent>
+						{currentStep === 0 && (
+							<AccountSetupStep
+								value={formData}
+								onChange={updateForm}
+								onNext={nextStep}
+							/>
+						)}
+						{currentStep === 1 && (
+							<CampaignDetailsStep
+								value={formData}
+								onChange={updateForm}
+								onNext={nextStep}
+								onBack={prevStep}
+							/>
+						)}
+						{currentStep === 2 && (
+							<TargetingBudgetStep
+								value={formData}
+								onChange={updateForm}
+								onNext={nextStep}
+								onBack={prevStep}
+							/>
+						)}
+						{currentStep === 3 && (
+							<ReviewSubmitStep value={formData} onBack={prevStep} onEditStep={setCurrentStep} />
+						)}
+					</CardContent>
+
+					{/* Footer */}
+					<div className="mt-6 text-center text-sm text-gray-500">
+						Need help?{' '}
+						<a href="mailto:support@daya.africa" className="text-blue-600 hover:underline">
+							Contact support
+						</a>
+					</div>
+				</Card>
+			</div>
+		</div>
+	);
 }
