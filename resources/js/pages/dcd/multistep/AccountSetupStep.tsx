@@ -180,7 +180,6 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
         },
         body: JSON.stringify({ email: emailValue }),
       });
@@ -201,7 +200,11 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
   };
 
   const validateNationalId = async (nationalIdValue: string) => {
-    if (!nationalIdValue || !/^\d+$/.test(nationalIdValue)) return;
+    console.log('validateNationalId called with:', nationalIdValue);
+    if (!nationalIdValue || !/^\d+$/.test(nationalIdValue)) {
+      console.log('National ID validation skipped - invalid format or empty');
+      return;
+    }
 
     setValidating(prev => ({ ...prev, nationalId: true }));
     try {
@@ -209,13 +212,14 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
         },
         body: JSON.stringify({ national_id: nationalIdValue }),
       });
 
+      console.log('API response status:', response.status);
       if (response.ok) {
         const data = await response.json();
+        console.log('API response data:', data);
         if (!data.valid) {
           setErrors(prev => ({ ...prev, nationalId: data.message }));
         } else {
@@ -238,7 +242,6 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
         },
         body: JSON.stringify({ phone: phoneValue }),
       });
