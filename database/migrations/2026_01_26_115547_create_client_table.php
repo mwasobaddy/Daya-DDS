@@ -21,7 +21,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('country_id')->constrained('countries')->onDelete('cascade');
             $table->unsignedBigInteger('county_id')->constrained('counties')->onDelete('cascade');
-            $table->unsignedBigInteger('subcounty_id')->constrained('subcounties')->onDelete('cascade');
+            $table->unsignedBigInteger('subcounty_id')->constrained('sub_counties')->onDelete('cascade');
             $table->unsignedBigInteger('ward_id')->constrained('wards')->onDelete('cascade');
             
             $table->timestamps();
