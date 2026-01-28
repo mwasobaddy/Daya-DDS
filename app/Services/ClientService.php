@@ -69,7 +69,7 @@ class ClientService
             $scanAllocated = (int) floor($creditsAllocated / $costPerScan);
 
             // Create campaign record
-            Campaign::create([
+            $campaign = Campaign::create([
                 'client_id' => $client->id,
                 'dcd_id' => null, // TODO: This should be assigned properly
                 'name' => $data['campaignName'],
