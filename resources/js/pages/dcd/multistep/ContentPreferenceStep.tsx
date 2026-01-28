@@ -64,7 +64,7 @@ const targetAudiences = [
   'Kids Appropriate',
   'Teen Appropriate (13+)',
   'Adult Content (18+)',
-  'No restriction'
+  'No restrictions'
 ];
 
 export default function ContentPreferenceStep({ value, onChange, onNext, onBack }: Props) {
@@ -111,11 +111,21 @@ export default function ContentPreferenceStep({ value, onChange, onNext, onBack 
   };
 
   const handleAudienceChange = (audience: string, checked: boolean) => {
-    const newSelected = checked
-      ? [...selectedAudiences, audience]
-      : selectedAudiences.filter(a => a !== audience);
-
-    setSelectedAudiences(newSelected);
+    if (checked) {
+      if (audience === 'No restrictions') {
+        // When "No restrictions" is selected, unselect all others
+        setSelectedAudiences(['No restrictions']);
+      } else {
+        // When any other option is selected, remove "No restrictions" if it was selected
+        setSelectedAudiences(prev => {
+          const newAudiences = prev.filter(a => a !== 'No restrictions');
+          return [...newAudiences, audience];
+        });
+      }
+    } else {
+      // When unchecking, just remove the audience
+      setSelectedAudiences(prev => prev.filter(a => a !== audience));
+    }
 
     // Clear error if user makes a selection
     if (errors.selectedAudiences) {

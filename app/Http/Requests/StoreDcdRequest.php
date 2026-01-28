@@ -56,7 +56,7 @@ class StoreDcdRequest extends FormRequest
             'musicPreferences' => 'nullable|array',
             'musicPreferences.*' => 'string',
             'safetyPreferences' => 'required|array|min:1',
-            'safetyPreferences.*' => 'string',
+            'safetyPreferences.*' => 'string|in:Kids Appropriate,Teen Appropriate (13+),Adult Content (18+),No restrictions',
             'footTrafficEstimate' => 'required|string',
 
             // Wallet Setup
