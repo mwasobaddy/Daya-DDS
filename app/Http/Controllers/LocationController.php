@@ -13,7 +13,7 @@ class LocationController extends Controller
     public function countries()
     {
         return response()->json(
-            Country::select('id', 'name', 'code')->get()
+            Country::select('id', 'name', 'code', 'currency_code', 'currency_symbol')->get()
         );
     }
 
