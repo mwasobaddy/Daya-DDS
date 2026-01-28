@@ -55,40 +55,40 @@ export default function DASignup() {
 				</h1>
 			</div>
 			<div className="max-w-7xl mx-auto grid grid-cols-7 gap-8">
-        {/* Top */}
-        <Card className="lg:hidden shadow-xl col-span-7 p-0 pt-3 bg-linear-to-t dark:from-neutral-900 dark:to-neutral-800 from-green-50 to-blue-50 dark:border-neutral-700 border rounded-xl">
-          <TopStepIndicator
-            steps={steps}
-            currentStep={currentStep}
-          />
-        </Card>
+				{/* Top */}
+				<Card className="lg:hidden shadow-xl col-span-7 p-0 pt-3 bg-linear-to-t dark:from-neutral-900 dark:to-neutral-800 from-green-50 to-blue-50 dark:border-neutral-700 border rounded-xl">
+					<TopStepIndicator
+						steps={steps}
+						currentStep={currentStep}
+					/>
+				</Card>
 
 				{/* Left Card - Progress and Welcome */}
 				<Card className="hidden lg:block shadow-xl col-span-7 lg:col-span-3 px-8 bg-linear-to-t dark:from-neutral-900 dark:to-neutral-800 from-green-50 to-blue-50 dark:border-neutral-700 border rounded-xl">
-          <div className="flex gap-4 mb-8 pt-6 items-center">
-              <div className="flex justify-center mb-4">
-                  <div className="h-8 w-8 bg-linear-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
-                      <BadgeCheck className="h-8 w-8 text-white" />
-                  </div>
-              </div>
-              <div>
-                  <h1 className="text-xl font-bold mb-0">
-                      Welcome, aboard!
-                  </h1>
-                  <p className="text-muted-foreground">
-                      Let's get workspace set up in just a few steps
-                  </p>
-                  <p className="text-muted-foreground">
-                    Complete all steps to join our ambassador program
-                  </p>
-              </div>
-          </div>
-          <div>
-            <LeftStepIndicator
-              steps={steps}
-              currentStep={currentStep}
-            />
-          </div>
+					<div className="flex gap-4 mb-8 pt-6 items-center">
+						<div className="flex justify-center mb-4">
+							<div className="h-8 w-8 bg-linear-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+								<BadgeCheck className="h-8 w-8 text-white" />
+							</div>
+						</div>
+						<div>
+							<h1 className="text-xl font-bold mb-0">
+								Welcome, aboard!
+							</h1>
+							<p className="text-muted-foreground">
+								Let's get workspace set up in just a few steps
+							</p>
+							<p className="text-muted-foreground">
+								Complete all steps to join our ambassador program
+							</p>
+						</div>
+					</div>
+					<div>
+						<LeftStepIndicator
+							steps={steps}
+							currentStep={currentStep}
+						/>
+					</div>
 				</Card>
 
 				{/* Right Card - Form Content */}
