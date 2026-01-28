@@ -60,6 +60,48 @@ const businessTypeGroups = [
 
 const allBusinessTypes = businessTypeGroups.flatMap(g => g.types);
 
+const businessTypeLabels: Record<string, string> = {
+  'kiosk_duka': 'Kiosk/Duka',
+  'mini_supermarket': 'Mini Supermarket',
+  'wholesale_shop': 'Wholesale Shop',
+  'hardware_store': 'Hardware Store',
+  'agrovet': 'Agrovet',
+  'butchery': 'Butchery',
+  'boutique': 'Boutique',
+  'electronics': 'Electronics',
+  'stationery': 'Stationery',
+  'general_store': 'General Store',
+  'salon': 'Salon',
+  'barber_shop': 'Barber Shop',
+  'beauty_parlour': 'Beauty Parlour',
+  'tailor': 'Tailor',
+  'uber': 'Uber',
+  'shoe_repair': 'Shoe Repair',
+  'photography_studio': 'Photography Studio',
+  'printing_cyber': 'Printing/Cyber',
+  'laundry': 'Laundry',
+  'cafe': 'Cafe',
+  'restaurant': 'Restaurant',
+  'fast_food': 'Fast Food',
+  'mama_mboga': 'Mama Mboga',
+  'milk_atm': 'Milk ATM',
+  'bakery': 'Bakery',
+  'mobile_money': 'Mobile Money',
+  'bank_agent': 'Bank Agent',
+  'bill_payment': 'Bill Payment',
+  'betting_shop': 'Betting Shop',
+  'boda_boda': 'Boda Boda',
+  'matatu_sacco': 'Matatu Sacco',
+  'fuel_station': 'Fuel Station',
+  'car_wash': 'Car Wash',
+  'church': 'Church',
+  'school_canteen': 'School Canteen',
+  'bar_lounge': 'Bar/Lounge',
+  'pharmacy': 'Pharmacy',
+  'clinic': 'Clinic',
+  'other': 'Other',
+};
+
 const footTrafficOptions = [
     '1-10 people',
     '11-50 people',
@@ -234,7 +276,7 @@ export default function BusinessInformationStep({ value, onChange, onNext, onBac
                                                 }}
                                                 className='border-gray-400 dark:border-gray-50/30'
                                             />
-                                            <span>{type}</span>
+                                            <span>{businessTypeLabels[type] || type}</span>
                                         </Label>
                                     ))}
                                 </div>

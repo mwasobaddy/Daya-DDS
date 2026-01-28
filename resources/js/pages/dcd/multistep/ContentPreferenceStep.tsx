@@ -14,12 +14,16 @@ interface Props {
 
 const contentTypes = [
   { id: 'music', label: 'Music', description: 'Audio content including songs, albums, and playlists' },
-  { id: 'games', label: 'Games', description: 'Video games, mobile games, and interactive content' },
-  { id: 'product_launch', label: 'Product Launch', description: 'New product announcements and launch campaigns' },
-  { id: 'events_promotions', label: 'Events & Promotions', description: 'Event marketing, promotional campaigns, and special offers' },
   { id: 'movies', label: 'Movies', description: 'Film content including movies, documentaries, and cinematic works' },
-  { id: 'mobile_apps', label: 'Mobile Apps', description: 'Mobile applications for iOS and Android platforms' },
+  { id: 'games', label: 'Games', description: 'Video games, mobile games, and interactive content' },
   { id: 'surveys', label: 'Surveys', description: 'Market research, feedback collection, and data gathering tools' },
+  { id: 'product_promotion', label: 'Product Promotion', description: 'Product marketing, sales promotions, and commercial advertising' },
+  { id: 'events_promotions', label: 'Events & Promotions', description: 'Event marketing, promotional campaigns, and special offers' },
+  { id: 'apartment_listing', label: 'Apartment Listing', description: 'Real estate listings, property rentals, and housing advertisements' },
+  { id: 'app_downloads', label: 'App Downloads', description: 'Promoting apps such as mobile, IOS and PC applications, games, and software' },
+  { id: 'product_launch', label: 'Product Launch', description: 'New product announcements and launch campaigns' },
+  { id: 'education_learning', label: 'Education & Learning', description: 'Educational content, online courses, and learning materials' },
+  { id: 'civic_political', label: 'Civic & Political', description: 'Community announcements, political campaigns, and civic engagement' },
 ];
 
 const musicGenres = [

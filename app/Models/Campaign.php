@@ -9,8 +9,8 @@ class Campaign extends Model
     protected $fillable = [
         'client_id',
         'dcd_id',
-        'campaign_name',
-        'campaign_type',
+        'name',
+        'type',
         'music_preferences',
         'digital_product_link',
         'explainer_video_link',
@@ -24,8 +24,9 @@ class Campaign extends Model
         'ward_target',
         'business_target',
         'target_audience',
-        'objectives',
+        'campaign_description',
         'status',
+        'cost_per_scan',
         'credits_allocated',
         'credits_balance',
         'credits_used',
@@ -38,7 +39,7 @@ class Campaign extends Model
         'music_preferences' => 'array',
         'safety_preferences' => 'array',
         'business_target' => 'array',
-        'campaign_objectives' => 'date',
+        'campaign_description' => 'string',
     ];
 
     public function client()

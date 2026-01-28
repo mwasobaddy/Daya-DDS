@@ -69,7 +69,7 @@ describe('DCD Registration', function () {
             'openingTime' => '08:00',
             'closingTime' => '18:00',
             'footTrafficEstimate' => 'High',
-            'campaignTypes' => ['advertising'],
+            'campaignTypes' => ['music'],
             'musicPreferences' => [],
             'safetyPreferences' => ['cctv'],
             'pin' => '1234',
@@ -87,24 +87,24 @@ describe('DCD Registration', function () {
         expect($user->full_name)->toBe('John Doe');
         expect($user->role)->toBe('dcd');
         expect($user->wallet_pin)->toBe('1234');
-        expect((int)$user->total_DDS_balance)->toBe(1000);
-        expect((int)$user->total_DWS_balance)->toBe(1000);
+        expect((int) $user->total_DDS_balance)->toBe(1000);
+        expect((int) $user->total_DWS_balance)->toBe(1000);
 
         // Assert referrer got tokens
         $referrer->refresh();
-        expect((int)$referrer->total_DDS_balance)->toBe(1500);
-        expect((int)$referrer->total_DWS_balance)->toBe(1500);
+        expect((int) $referrer->total_DDS_balance)->toBe(1500);
+        expect((int) $referrer->total_DWS_balance)->toBe(1500);
 
         // Assert venture shares were created
         $signupShares = VentureShare::where('user_id', $user->id)->where('reason', 'DCD Signup Bonus')->first();
         expect($signupShares)->not->toBeNull();
-        expect((int)$signupShares->dds_earned)->toBe(1000);
-        expect((int)$signupShares->dws_earned)->toBe(1000);
+        expect((int) $signupShares->dds_earned)->toBe(1000);
+        expect((int) $signupShares->dws_earned)->toBe(1000);
 
         $referralShares = VentureShare::where('user_id', $referrer->id)->where('reason', 'like', 'DCD Referral: John Doe')->first();
         expect($referralShares)->not->toBeNull();
-        expect((int)$referralShares->dds_earned)->toBe(500);
-        expect((int)$referralShares->dws_earned)->toBe(500);
+        expect((int) $referralShares->dds_earned)->toBe(500);
+        expect((int) $referralShares->dws_earned)->toBe(500);
 
         // Assert files were generated
         Storage::disk('public')->assertExists($dcd->qr_code_path);
@@ -142,14 +142,14 @@ describe('DCD Registration', function () {
             'openingTime' => '08:00',
             'closingTime' => '18:00',
             'footTrafficEstimate' => 'High',
-            'campaignTypes' => ['advertising'],
+            'campaignTypes' => ['games'],
             'musicPreferences' => [],
             'safetyPreferences' => ['cctv'],
             'pin' => '1234',
             'referralCode' => 'INVALIDREF',
         ];
 
-        expect(fn() => $dcdService->createDcd($registrationData))
+        expect(fn () => $dcdService->createDcd($registrationData))
             ->toThrow(\Illuminate\Validation\ValidationException::class);
     });
 
@@ -190,7 +190,7 @@ describe('DCD Registration', function () {
             'openingTime' => '09:00',
             'closingTime' => '17:00',
             'footTrafficEstimate' => 'Medium',
-            'campaignTypes' => ['promotions'],
+            'campaignTypes' => ['events_promotions'],
             'musicPreferences' => [],
             'safetyPreferences' => ['security_guard'],
             'pin' => '5678',
@@ -199,12 +199,12 @@ describe('DCD Registration', function () {
         $dcd = $dcdService->createDcd($registrationData);
 
         $admin2->refresh();
-        expect((int)$admin2->total_DDS_balance)->toBe(1000);
-        expect((int)$admin2->total_DWS_balance)->toBe(1300);
+        expect((int) $admin2->total_DDS_balance)->toBe(1000);
+        expect((int) $admin2->total_DWS_balance)->toBe(1300);
 
         $admin1->refresh();
-        expect((int)$admin1->total_DDS_balance)->toBe(1000);
-        expect((int)$admin1->total_DWS_balance)->toBe(2000);
+        expect((int) $admin1->total_DDS_balance)->toBe(1000);
+        expect((int) $admin1->total_DWS_balance)->toBe(2000);
 
         $referralShares = VentureShare::where('user_id', $admin2->id)->where('reason', 'like', 'DCD Referral: Jane Doe')->first();
         expect($referralShares)->not->toBeNull();
@@ -243,7 +243,7 @@ describe('DCD Registration', function () {
             'openingTime' => '10:00',
             'closingTime' => '20:00',
             'footTrafficEstimate' => 'Low',
-            'campaignTypes' => ['events'],
+            'campaignTypes' => ['movies'],
             'musicPreferences' => [],
             'safetyPreferences' => ['alarm_system'],
             'pin' => '9999',
@@ -253,12 +253,12 @@ describe('DCD Registration', function () {
         $dcd = $dcdService->createDcd($registrationData);
 
         $user = $dcd->user;
-        expect((int)$user->total_DDS_balance)->toBe(0);
-        expect((int)$user->total_DWS_balance)->toBe(0);
+        expect((int) $user->total_DDS_balance)->toBe(0);
+        expect((int) $user->total_DWS_balance)->toBe(0);
 
         $referrer->refresh();
-        expect((int)$referrer->total_DDS_balance)->toBe(1000);
-        expect((int)$referrer->total_DWS_balance)->toBe(1000);
+        expect((int) $referrer->total_DDS_balance)->toBe(1000);
+        expect((int) $referrer->total_DWS_balance)->toBe(1000);
 
         $signupShares = VentureShare::where('user_id', $user->id)->where('reason', 'DCD Signup Bonus')->count();
         expect($signupShares)->toBe(0);
@@ -303,7 +303,7 @@ describe('DCD Registration', function () {
             'openingTime' => '07:00',
             'closingTime' => '19:00',
             'footTrafficEstimate' => 'Very High',
-            'campaignTypes' => ['marketing'],
+            'campaignTypes' => ['surveys'],
             'musicPreferences' => [],
             'safetyPreferences' => ['fire_extinguisher'],
             'pin' => '1111',

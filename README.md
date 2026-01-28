@@ -725,3 +725,7 @@ This project is proprietary software. All rights reserved.
 
 For technical support or inquiries, please contact the development team.</content>
 <parameter name="filePath">/Users/app/Desktop/Laravel/Daya-DDS/README.md
+
+in the #file:2026_01_26_121510_create_campaigns_table.php , I would love you to edit and add a coulmn labeled cost_per_scan that will accept the values 1, 5 and 10.
+
+This value will be filled from the frontend. In the client 

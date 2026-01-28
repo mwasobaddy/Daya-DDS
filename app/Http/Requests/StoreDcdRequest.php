@@ -52,7 +52,7 @@ class StoreDcdRequest extends FormRequest
 
             // Content Preferences
             'campaignTypes' => 'required|array|min:1',
-            'campaignTypes.*' => 'string',
+            'campaignTypes.*' => 'string|in:music,games,movies,surveys,events_promotions,product_launch,app_downloads,product_promotion,apartment_listing,education_learning,civic_political',
             'musicPreferences' => 'nullable|array',
             'musicPreferences.*' => 'string',
             'safetyPreferences' => 'required|array|min:1',

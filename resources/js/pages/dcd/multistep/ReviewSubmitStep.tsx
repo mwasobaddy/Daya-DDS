@@ -14,13 +14,16 @@ interface Props {
 
 const contentTypeLabels: Record<string, string> = {
   music: 'Music',
-  video: 'Video',
-  books: 'Books',
-  podcasts: 'Podcasts',
+  movies: 'Movies',
   games: 'Games',
-  software: 'Software',
-  courses: 'Courses',
-  artwork: 'Artwork'
+  surveys: 'Surveys',
+  product_promotion: 'Product Promotion',
+  events_promotions: 'Events & Promotions',
+  apartment_listing: 'Apartment Listing',
+  app_downloads: 'App Downloads',
+  product_launch: 'Product Launch',
+  education_learning: 'Education & Learning',
+  civic_political: 'Civic & Political',
 };
 
 export default function ReviewSubmitStep({ formData, onBack, onEditStep }: Props) {
@@ -95,26 +98,6 @@ export default function ReviewSubmitStep({ formData, onBack, onEditStep }: Props
     }
   };
 
-  const formatLocation = () => {
-    const country = formData.countryName || formData.country;
-    const county = formData.countyName || formData.county;
-    const subcounty = formData.subcountyName || formData.subcounty;
-    const ward = formData.wardName || formData.ward;
-
-    // If we have names, use them; otherwise show a loading state
-    if (!country || !county || !subcounty || !ward) {
-      return 'Loading location data...';
-    }
-
-    // Ensure we're using names, not IDs
-    const countryName = typeof country === 'string' && !/^\d+$/.test(country) ? country : 'Unknown Country';
-    const countyName = typeof county === 'string' && !/^\d+$/.test(county) ? county : 'Unknown County';
-    const subcountyName = typeof subcounty === 'string' && !/^\d+$/.test(subcounty) ? subcounty : 'Unknown Subcounty';
-    const wardName = typeof ward === 'string' && !/^\d+$/.test(ward) ? ward : 'Unknown Ward';
-
-    return `${wardName}, ${subcountyName}, ${countyName}, ${countryName}`;
-  };
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -173,7 +156,18 @@ export default function ReviewSubmitStep({ formData, onBack, onEditStep }: Props
             </div>
             <div className="md:col-span-2">
               <span className="font-medium text-gray-700 dark:text-neutral-300">Location:</span>
-              <p className="text-gray-600 dark:text-neutral-400">{formatLocation()}</p>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {formData.countryName ? (
+                  <>
+                    {formData.wardName && <Badge variant="secondary">{String(formData.wardName)}</Badge>}
+                    {formData.subcountyName && <Badge variant="secondary">{String(formData.subcountyName)}</Badge>}
+                    {formData.countyName && <Badge variant="secondary">{String(formData.countyName)}</Badge>}
+                    {formData.countryName && <Badge variant="secondary">{String(formData.countryName)}</Badge>}
+                  </>
+                ) : (
+                  <p className="text-gray-600 dark:text-neutral-400">Not specified (National targeting)</p>
+                )}
+              </div>
             </div>
           </div>
         </Card>
