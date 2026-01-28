@@ -83,6 +83,7 @@ export default function CampaignDetailsStep({ value, onChange, onNext, onBack }:
       const end = new Date(endDate);
       const diffTime = Math.abs(end.getTime() - start.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end dates
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCampaignDuration(diffDays.toString());
     } else {
       setCampaignDuration('');

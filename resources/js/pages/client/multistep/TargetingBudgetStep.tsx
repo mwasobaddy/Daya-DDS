@@ -21,7 +21,7 @@ interface LocationOption {
   code: string;
 }
 
-const safetyPreferences = ['Safe for Work', 'Safe for Family', 'No restrictions'];
+const safetyPreferences = ['Kids Appropriate', 'Teen Appropriate (13+)', 'Adult Content (18+)', 'No restrictions'];
 
 const businessTypeGroups = [
   {
@@ -194,9 +194,23 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
 
   const handleSafetyPreferenceChange = (safetyPref: string, checked: boolean) => {
     if (checked) {
-      setSelectedSafetyPreferences(prev => [...prev, safetyPref]);
+      if (safetyPref === 'No restrictions') {
+        // When "No restrictions" is selected, unselect all others
+        setSelectedSafetyPreferences(['No restrictions']);
+      } else {
+        // When any other option is selected, remove "No restrictions" if it was selected
+        setSelectedSafetyPreferences(prev => {
+          const newPrefs = prev.filter(pref => pref !== 'No restrictions');
+          return [...newPrefs, safetyPref];
+        });
+      }
     } else {
+      // When unchecking, just remove the preference
       setSelectedSafetyPreferences(prev => prev.filter(pref => pref !== safetyPref));
+    }
+
+    if (errors.safetyPreferences) {
+      setErrors(prev => ({ ...prev, safetyPreferences: '' }));
     }
   };
 

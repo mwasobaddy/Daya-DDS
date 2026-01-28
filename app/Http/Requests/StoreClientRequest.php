@@ -41,7 +41,7 @@ class StoreClientRequest extends FormRequest
             'endDate' => 'required|date|after:startDate',
             'targetAudience' => 'required|string|min:50|max:2000',
             'selectedSafetyPreferences' => 'required|array|min:1',
-            'selectedSafetyPreferences.*' => 'string|in:Safe for Work,Safe for Family,No restrictions',
+            'selectedSafetyPreferences.*' => 'string|in:Kids Appropriate,Teen Appropriate (13+),Adult Content (18+),No restrictions',
             'selectedBusinessTypes' => 'required|array|min:1',
             'selectedBusinessTypes.*' => 'string|in:kiosk_duka,mini_supermarket,wholesale_shop,hardware_store,agrovet,butchery,boutique,electronics,stationery,general_store,salon,barber_shop,beauty_parlour,tailor,uber,shoe_repair,photography_studio,printing_cyber,laundry,cafe,restaurant,fast_food,mama_mboga,milk_atm,bakery,mobile_money,bank_agent,bill_payment,betting_shop,boda_boda,matatu_sacco,fuel_station,car_wash,church,school_canteen,bar_lounge,pharmacy,clinic,other',
             'otherBusinessType' => 'nullable|required_if:selectedBusinessTypes.*,other|string|max:255',
