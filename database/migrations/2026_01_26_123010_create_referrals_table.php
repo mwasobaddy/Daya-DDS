@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('referrer_id')->constrained('users')->onDelete('cascade'); // Admin, DA or DCD
             $table->foreignId('referred_id')->constrained('users')->onDelete('cascade'); // DA or DCD
-            $table->enum('type', ['admin_to_da', 'admin_to_dcd', 'da_to_da', 'da_to_dcd', 'dcd_to_da', 'da_to_dcd']);
+            $table->enum('type', ['admin_to_da', 'admin_to_dcd', 'da_to_da', 'da_to_dcd', 'dcd_to_da', 'dcd_to_dcd']);
             $table->timestamps();
         });
     }
