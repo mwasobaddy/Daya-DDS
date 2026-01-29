@@ -34,7 +34,7 @@ class CampaignFactory extends Factory
             'ward_target' => 1,
             'business_target' => [
                 'custom' => '',
-                'types' => ['kiosk_duka']
+                'types' => ['kiosk_duka'],
             ],
             'target_audience' => $this->faker->paragraph(),
             'campaign_description' => $this->faker->paragraph(),
@@ -46,6 +46,16 @@ class CampaignFactory extends Factory
             'scan_allocated' => 100,
             'scan_balance' => 100,
             'scan_used' => 0,
+            'start_date' => $this->faker->dateTimeBetween('now', '+30 days'),
+            'end_date' => $this->faker->dateTimeBetween('+31 days', '+90 days'),
+            'engagement_score' => $this->faker->numberBetween(0, 100),
         ];
+    }
+
+    public function approved(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'approved',
+        ]);
     }
 }

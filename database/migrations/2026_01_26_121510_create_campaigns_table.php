@@ -34,7 +34,11 @@ return new class extends Migration
             $table->longText('target_audience')->nullable();
             $table->longText('campaign_description')->nullable();
 
-            $table->string('status')->default('pending');
+            $table->date('start_date')->timestamp();
+            $table->date('end_date')->timestamp();
+            $table->integer('engagement_score')->default(0);
+
+            $table->enum('status', ['pending', 'approved', 'rejected', 'active', 'completed', 'expired'])->default('pending');
 
             $table->enum('cost_per_scan', ['1', '5', '10'])->default('1');
             $table->integer('credits_allocated')->default(0);
