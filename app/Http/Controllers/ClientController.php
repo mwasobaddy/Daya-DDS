@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreClientRequest;
 use App\Models\AdminAction;
 use App\Models\Campaign;
+use App\Services\CampaignMatchingService;
 use App\Services\ClientService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,8 @@ use Inertia\Inertia;
 class ClientController extends Controller
 {
     public function __construct(
-        private ClientService $clientService
+        private ClientService $clientService,
+        private CampaignMatchingService $matchingService
     ) {}
 
     public function index(Request $request)
@@ -83,7 +85,7 @@ class ClientController extends Controller
         }
 
         // Check if DCD can be assigned
-        $dcd = $this->findMatchingDcd($campaign);
+        $dcd = $this->matchingService->findMatchingDcd($campaign);
 
         return Inertia::render('admin/CampaignApprove', [
             'campaign' => $campaign->load('client'),
@@ -120,7 +122,7 @@ class ClientController extends Controller
         $campaign->update(['status' => 'approved']);
 
         // Try to find matching DCD
-        $dcd = $this->findMatchingDcd($campaign);
+        $dcd = $this->matchingService->findMatchingDcd($campaign);
         if ($dcd) {
             $campaign->update(['dcd_id' => $dcd->id]);
         } else {
@@ -131,7 +133,7 @@ class ClientController extends Controller
         // Send confirmation email to client
         $campaign->client->notify(new \App\Notifications\ClientCampaignApprovedNotification($campaign));
 
-        return redirect()->route('admin.dashboard')->with('success', 'Campaign approved successfully.');
+        return redirect()->route('home')->with('success', 'Campaign approved successfully.');
     }
 
     public function processReject(Request $request, Campaign $campaign)
@@ -169,16 +171,6 @@ class ClientController extends Controller
         // Send rejection email to client
         $campaign->client->notify(new \App\Notifications\ClientCampaignRejectedNotification($campaign, $request->rejection_reason));
 
-        return redirect()->route('admin.dashboard')->with('success', 'Campaign rejected successfully.');
-    }
-
-    private function findMatchingDcd(Campaign $campaign)
-    {
-        // Simple matching logic: find DCD in the same location with matching business types
-        // This can be enhanced later
-        return \App\Models\Dcd::where('country_id', $campaign->country_target)
-            ->where('county_id', $campaign->county_target)
-            ->whereJsonContains('business_types', $campaign->business_target)
-            ->first();
+        return redirect()->route('home')->with('success', 'Campaign rejected successfully.');
     }
 }
