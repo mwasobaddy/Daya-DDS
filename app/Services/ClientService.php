@@ -69,12 +69,11 @@ class ClientService
             $scanAllocated = (int) floor($creditsAllocated / $costPerScan);
 
             // Prepare business target data
-            $businessTarget = [
-                'types' => $data['selectedBusinessTypes'],
-            ];
+            $businessTarget = [];
             if (in_array('other', $data['selectedBusinessTypes']) && ! empty($data['otherBusinessType'])) {
                 $businessTarget['custom'] = $data['otherBusinessType'];
             }
+            $businessTarget['types'] = $data['selectedBusinessTypes'];
 
             // Create campaign record
             $campaign = Campaign::create([
