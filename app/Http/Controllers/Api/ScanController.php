@@ -36,7 +36,9 @@ class ScanController extends Controller
         $result = $this->scanService->processScan(
             $request->dcd_user_id,
             $request->device_identifier,
-            $geo
+            $geo,
+            $request->userAgent(), // User-Agent header
+            $request->ip() // IP address
         );
 
         if (! $result['success']) {
