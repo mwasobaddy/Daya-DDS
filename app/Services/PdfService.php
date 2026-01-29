@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\User;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
+use TCPDF;
 
 class PdfService
 {
@@ -13,79 +13,70 @@ class PdfService
      */
     public function generateQrCodePdf(User $user, string $qrCodePath): string
     {
-        // Get the absolute path to the QR code file
-        $qrCodeFullPath = Storage::disk('public')->path($qrCodePath);
+        // Get the QR code image data
+        $qrCodeContent = Storage::disk('public')->get($qrCodePath);
 
-        // Page 1: Full scale QR code
-        $page1Html = $this->getPage1Html($user, $qrCodeFullPath);
+        // Create new PDF document
+        $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
 
-        // Page 2: Mobile sized QR code
-        $page2Html = $this->getPage2Html($user, $qrCodeFullPath);
+        // Set document information
+        $pdf->SetCreator('Daya DDS');
+        $pdf->SetAuthor('Daya Distribution System');
+        $pdf->SetTitle('DCD Guide - '.$user->full_name);
+        $pdf->SetSubject('QR Code Guide for '.$user->full_name);
 
-        $fullHtml = $page1Html.$page2Html;
+        // Remove default header/footer
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
 
-        $pdf = Pdf::loadHTML($fullHtml)
-            ->setPaper('a4', 'portrait')
-            ->setOptions([
-                'defaultFont' => 'sans-serif',
-                'isRemoteEnabled' => true,
-                'isHtml5ParserEnabled' => true,
-                'isPhpEnabled' => true
-            ]);
+        // Set margins
+        $pdf->SetMargins(20, 20, 20);
+
+        // Disable auto page breaks for first page
+        $pdf->SetAutoPageBreak(false);
+
+        // Add first page
+        $pdf->AddPage();
+
+        // Set font for DAYA title
+        $pdf->SetFont('helvetica', 'B', 48);
+
+        // Set background color for DAYA (#7ac4db)
+        $pdf->SetFillColor(122, 196, 219); // #7ac4db in RGB
+        $pdf->SetTextColor(255, 255, 255); // White text
+
+        // Add DAYA title with background
+        $pdf->Cell(0, 30, 'DAYA', 0, 1, 'C', true);
+        $pdf->Ln(20);
+
+        // Reset text color to black
+        $pdf->SetTextColor(0, 0, 0);
+
+        // Add description
+        $pdf->SetFont('helvetica', '', 18);
+        $pdf->Cell(0, 15, 'discover with daya', 0, 1, 'C');
+        $pdf->Ln(20);
+
+        // Add big QR code covering most of the remaining page
+        $pdf->Image('@'.$qrCodeContent, 20, 105, 170, 140, 'PNG', '', '', false, 300, 'C');
+
+        // Add footer at bottom of page
+        $pdf->SetY(270);
+        $pdf->SetFont('helvetica', '', 12);
+        $pdf->Cell(0, 10, 'dayadistribution.com', 0, 1, 'C');
+
+        // Enable auto page breaks for second page
+        $pdf->SetAutoPageBreak(true, 20);
+
+        // Add second page
+        $pdf->AddPage();
+
+        // Add small QR code in the middle
+        $pdf->Image('@'.$qrCodeContent, '', '', 100, 100, 'PNG', '', '', false, 300, 'C');
 
         $filename = 'qrcodes/dcd_'.$user->id.'_guide.pdf';
-        Storage::disk('public')->put($filename, $pdf->output());
+        Storage::disk('public')->put($filename, $pdf->Output('', 'S'));
 
         return $filename;
-    }
-
-    /**
-     * Get HTML for page 1 (full scale QR code)
-     */
-    private function getPage1Html(User $user, string $qrCodePath): string
-    {
-        return '
-        <html>
-        <head>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-                .header { background-color: #1e40af; color: white; padding: 30px; text-align: center; margin: -20px -20px 30px -20px; }
-                .header h1 { margin: 0; font-size: 36px; font-weight: bold; }
-                .content { text-align: center; padding: 20px; }
-                .qr-section { margin: 40px 0; }
-                .qr-code { max-width: 400px; margin: 0 auto; }
-                .footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; padding: 20px; border-top: 1px solid #eee; }
-                .discover { font-size: 24px; margin-bottom: 20px; color: #1e40af; }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h1>'.htmlspecialchars($user->full_name).'</h1>
-            </div>
-            <div class="content">
-                <div class="discover">Discover with Daya</div>
-                <div class="qr-section">
-                    <img src="'.$qrCodePath.'" alt="QR Code" class="qr-code" />
-                </div>
-            </div>
-            <div class="footer">
-                <p>dayadistribution.com</p>
-            </div>
-        </body>
-        </html>';
-    }
-
-    /**
-     * Get HTML for page 2 (mobile sized QR code)
-     */
-    private function getPage2Html(User $user, string $qrCodePath): string
-    {
-        return '
-        <div style="page-break-before: always;">
-            <div style="text-align: center; padding: 100px 20px;">
-                <h2 style="color: #1e40af; margin-bottom: 50px;">Mobile QR Code</h2>
-                <img src="'.$qrCodePath.'" alt="Mobile QR Code" style="max-width: 200px; margin: 0 auto;" />
-            </div>
-        </div>';
     }
 }
