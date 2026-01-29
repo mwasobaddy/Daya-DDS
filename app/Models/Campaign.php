@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Campaign extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'client_id',
         'dcd_id',
@@ -35,6 +36,9 @@ class Campaign extends Model
         'scan_allocated',
         'scan_balance',
         'scan_used',
+        'start_date',
+        'end_date',
+        'engagement_score',
     ];
 
     protected $casts = [
@@ -42,6 +46,8 @@ class Campaign extends Model
         'safety_preferences' => 'array',
         'business_target' => 'array',
         'campaign_description' => 'string',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
     ];
 
     public function client()
