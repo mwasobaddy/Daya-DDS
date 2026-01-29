@@ -9,6 +9,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import React from 'react';
+import { preserveRef } from '../../utils/url';
 
 interface Props {
   title: string;
@@ -137,7 +138,7 @@ export default function Index({ title, description }: Props) {
         {/* Footer CTA */}
         <section className="text-center relative">
           <Link
-            href="/dcd/register"
+            href={preserveRef('/dcd/register')}
             className="group inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-10 py-5 text-lg font-bold text-white shadow-xl hover:bg-indigo-500 focus-visible:outline focus-visible:outline-offset-2 active:scale-95 transition-all duration-200"
           >
             Start Distributing Today
