@@ -13,19 +13,25 @@ class PdfService
      */
     public function generateQrCodePdf(User $user, string $qrCodePath): string
     {
-        $fullQrCodePath = Storage::disk('public')->path($qrCodePath);
+        // Get the absolute path to the QR code file
+        $qrCodeFullPath = Storage::disk('public')->path($qrCodePath);
 
         // Page 1: Full scale QR code
-        $page1Html = $this->getPage1Html($user, $fullQrCodePath);
+        $page1Html = $this->getPage1Html($user, $qrCodeFullPath);
 
         // Page 2: Mobile sized QR code
-        $page2Html = $this->getPage2Html($user, $fullQrCodePath);
+        $page2Html = $this->getPage2Html($user, $qrCodeFullPath);
 
         $fullHtml = $page1Html.$page2Html;
 
         $pdf = Pdf::loadHTML($fullHtml)
             ->setPaper('a4', 'portrait')
-            ->setOptions(['defaultFont' => 'sans-serif']);
+            ->setOptions([
+                'defaultFont' => 'sans-serif',
+                'isRemoteEnabled' => true,
+                'isHtml5ParserEnabled' => true,
+                'isPhpEnabled' => true
+            ]);
 
         $filename = 'qrcodes/dcd_'.$user->id.'_guide.pdf';
         Storage::disk('public')->put($filename, $pdf->output());
@@ -59,7 +65,7 @@ class PdfService
             <div class="content">
                 <div class="discover">Discover with Daya</div>
                 <div class="qr-section">
-                    <img src="file://'.$qrCodePath.'" alt="QR Code" class="qr-code" />
+                    <img src="'.$qrCodePath.'" alt="QR Code" class="qr-code" />
                 </div>
             </div>
             <div class="footer">
@@ -78,7 +84,7 @@ class PdfService
         <div style="page-break-before: always;">
             <div style="text-align: center; padding: 100px 20px;">
                 <h2 style="color: #1e40af; margin-bottom: 50px;">Mobile QR Code</h2>
-                <img src="file://'.$qrCodePath.'" alt="Mobile QR Code" style="max-width: 200px; margin: 0 auto;" />
+                <img src="'.$qrCodePath.'" alt="Mobile QR Code" style="max-width: 200px; margin: 0 auto;" />
             </div>
         </div>';
     }
