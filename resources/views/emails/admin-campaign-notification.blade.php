@@ -1,5 +1,6 @@
 {{-- resources/views/emails/admin-campaign-notification.blade.php --}}
-<x-mail::message>
+@component('mail::message')
+
 # New Campaign Registration Requires Review
 
 Hello Admin,
@@ -19,16 +20,17 @@ A new campaign has been registered and requires your review.
 - **Budget:** {{ $campaign->budget }} {{ $campaign->currency }}
 - **Description:** {{ $campaign->campaign_description }}
 
-<x-mail::button :url="$approveUrl" color="success">
+@component('mail::button', ['url' => $approveUrl, 'color' => 'success'])
 Approve Campaign
-</x-mail::button>
+@endcomponent
 
-<x-mail::button :url="$rejectUrl" color="danger">
+@component('mail::button', ['url' => $rejectUrl, 'color' => 'error'])
 Reject Campaign
-</x-mail::button>
+@endcomponent
 
 Please review and take appropriate action.
 
 Best regards,<br>
 Daya DDS Team
-</x-mail::message>
+
+@endcomponent
