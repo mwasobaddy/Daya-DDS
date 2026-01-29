@@ -103,6 +103,9 @@ class ClientService
                 'scan_allocated' => $scanAllocated,
                 'scan_balance' => $scanAllocated,
                 'scan_used' => 0,
+                'start_date' => now(),
+                'end_date' => now()->addDays(30),
+                'engagement_score' => 50, // Default engagement score
             ]);
 
             // Notify admins about the new campaign
