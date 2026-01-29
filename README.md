@@ -17,10 +17,11 @@ The Digital Distribution Service (DDS) is a cloud-native platform connecting Cli
 #### Key Workflows
 
 1. **Campaign Creation**: Clients create targeted campaigns with specific budgets and objectives
-2. **Content Distribution**: DCDs display QR codes at their physical locations
-3. **Community Engagement**: DAs promote campaigns and earn referral rewards
-4. **Scan Tracking**: System tracks QR code scans and engagement metrics
-5. **Reward Distribution**: Automated token rewards for successful distributions
+2. **Campaign Approval**: Submitted campaigns undergo administrative review. Approved campaigns are automatically matched to suitable DCDs based on location, business type, content preferences, safety preferences, and operating days. Rejected campaigns can be revised and resubmitted.
+3. **Content Distribution**: DCDs display QR codes at their physical locations
+4. **Community Engagement**: DAs promote campaigns and earn referral rewards
+5. **Scan Tracking**: System tracks QR code scans and engagement metrics
+6. **Reward Distribution**: Automated token rewards for successful distributions
 
 ## Technical Stack
 
@@ -72,6 +73,7 @@ The Digital Distribution Service (DDS) is a cloud-native platform connecting Cli
 - **Foot Traffic Analytics**: Business location performance metrics
 - **Token Rewards**: Automated earnings from successful content distribution
 - **Referral System**: Multi-level referral rewards for DCD network expansion
+- **Campaign Matching**: Automated matching of approved campaigns to suitable DCDs using hierarchical filtering (location, business type, content type, safety preferences, operating days). Includes hourly cron job for retrying unmatched campaigns
 
 ### Digital Ambassador Program
 - **Referral System**: Multi-level referral rewards with token incentives
@@ -111,7 +113,7 @@ The Digital Distribution Service (DDS) is a cloud-native platform connecting Cli
 #### Campaigns Table
 - **Purpose**: Campaign definition and management
 - **Key Fields**:
-  - Campaign metadata (name, type, objectives)
+  - Campaign metadata (name, type, objectives: "education_learning")
   - Budget and credit allocation
   - Geographic targeting
   - Content links and media
@@ -334,10 +336,10 @@ The Digital Content Distributor (DCD) registration is a comprehensive 5-step pro
 
 #### Step 3: Content Preferences
 - **Campaign Types**: Multi-select content categories:
-  - Artwork, Music, Fashion, Food & Beverage, Health & Wellness, Technology, Education, Entertainment, Sports, News & Media, Religious, Political, Non-Profit, Other
+  - surveys, events_promotions, games
 - **Music Preferences**: Optional music genre preferences for audio content
 - **Safety Preferences**: Required audience targeting preferences:
-  - Family-friendly, General audience, Mature content (18+), All ages
+  - Kids Appropriate, Teen Appropriate (13+), Adult Content (18+)
 
 #### Step 4: Wallet Setup
 - **PIN Creation**: 4-digit numeric PIN for wallet security
@@ -426,6 +428,10 @@ CREATE TABLE dcd (
 
 #### Key DCD Features
 - **JSON Storage**: Flexible storage for multi-select preferences and business types
+- **Business Type**: JSON object with "custom" (string for custom types) and "types" (array: kiosk_duka, mini_supermarket, wholesale_shop, hardware_store, agrovet, butchery, boutique, electronics, stationery, general_store, salon, barber_shop, beauty_parlour, tailor, uber, shoe_repair, photography_studio, printing_cyber, laundry, cafe, restaurant, fast_food, mama_mboga, milk_atm, bakery, mobile_money, bank_agent, bill_payment, betting_shop, boda_boda, matatu_sacco, fuel_station, car_wash, church, school_canteen, bar_lounge, pharmacy, clinic, other)
+- **Operating Days**: JSON array: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+- **Campaign Types**: JSON array: ["surveys", "events_promotions", "games"]
+- **Safety Preferences**: JSON array: ["Kids Appropriate", "Teen Appropriate (13+)", "Adult Content (18+)"]
 - **File Paths**: QR code and PDF guide file path storage
 - **User Relationship**: Direct foreign key relationship with users table
 - **Timestamps**: Automatic creation and update timestamp tracking
@@ -456,6 +462,36 @@ CREATE TABLE dcd (
 - **Engagement Tracking**: Records scan events and user interactions
 - **Reward Distribution**: Processes earnings from successful scans
 - **Analytics Integration**: Feeds data to performance tracking systems
+
+## Campaign to DCD Matching
+
+### Automated Matching Process
+
+The system automatically matches approved campaigns to suitable DCDs using a hierarchical filtering algorithm:
+
+1. **Location Filtering**: Matches campaigns to DCDs in the same geographic area (ward, subcounty, county, country)
+2. **Campaign Limit Check**: Ensures DCD has not exceeded their maximum concurrent campaigns
+3. **Business Type Matching**: Matches campaign objectives with DCD's business types
+4. **Content Type Compatibility**: Ensures DCD's campaign types include the campaign's content type
+5. **Safety Preference Alignment**: Verifies DCD's safety preferences are compatible with campaign requirements
+6. **Operating Days Overlap**: Checks for at least one common operating day between campaign and DCD
+
+### Cron Job Retry Mechanism
+
+An hourly cron job (`MatchDcdToCampaigns` command) processes unmatched approved campaigns, attempting to find suitable DCDs that may have become available or updated their preferences.
+
+- **Frequency**: Runs every hour
+- **Scope**: Only processes campaigns with status 'approved' and no assigned DCD
+- **Logging**: Comprehensive logging of matching attempts and results
+- **Notifications**: Alerts administrators of successful matches
+
+### Matching Service Architecture
+
+#### CampaignMatchingService
+- **Hierarchical Filtering**: Implements step-by-step elimination of unsuitable DCDs
+- **Early Termination**: Stops processing when no candidates remain
+- **Random Selection**: For tie-breaking when multiple DCDs qualify
+- **Error Handling**: Graceful handling of database errors and edge cases
 
 ## DA Workflow
 
