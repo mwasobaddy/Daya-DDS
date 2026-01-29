@@ -1,1043 +1,324 @@
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     BarChart3,
     Users,
     CheckSquare,
     TrendingUp,
     Rocket,
-    Music,
-    HandshakeIcon,
-    QrCode,
     Play,
     Menu,
     X,
     ArrowRight,
 } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
-
-const styles = `
-    :root {
-        --turquoise: #7AC4DB;
-        --cobalt: #005EA3;
-        --navy: #292175;
-        --lime: #7DBF30;
-        --yellow: #DEB81A;
-        --dark: #1F1A17;
-        --white: #FFFFFF;
-        --light-bg: #F8FAFD;
-        --light-gray: #F5F8FB;
-        --transition: all 0.3s ease;
-    }
-
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
-
-    html {
-        scroll-behavior: smooth;
-    }
-
-    body {
-        font-family: 'Source Sans Pro', sans-serif;
-        font-weight: 400;
-        color: var(--dark);
-        background: var(--white);
-        line-height: 1.6;
-        overflow-x: hidden;
-    }
-
-    h1, h2, h3, h4 {
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 600;
-        line-height: 1.3;
-    }
-
-    .container {
-        width: 85%;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    header {
-        position: sticky;
-        top: 0;
-        background: var(--white);
-        padding: 1.2rem 0;
-        z-index: 1000;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        transition: var(--transition);
-    }
-
-    .header-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .logo-container {
-        display: flex;
-        align-items: center;
-    }
-
-    .logo-img {
-        height: 42px;
-        width: auto;
-        transition: var(--transition);
-    }
-
-    .nav-links {
-        display: flex;
-        gap: 2.5rem;
-        align-items: center;
-    }
-
-    .nav-links a {
-        text-decoration: none;
-        color: var(--dark);
-        font-weight: 500;
-        font-size: 1rem;
-        position: relative;
-        padding: 0.5rem 0;
-        transition: var(--transition);
-    }
-
-    .nav-links a:hover {
-        color: var(--cobalt);
-    }
-
-    .nav-links a::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: var(--turquoise);
-        transition: width 0.3s ease;
-    }
-
-    .nav-links a:hover::after {
-        width: 100%;
-    }
-
-    .btn-primary {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, var(--turquoise), var(--cobalt));
-        color: white;
-        padding: 0.9rem 2rem;
-        border-radius: 30px;
-        text-decoration: none;
-        font-weight: 700;
-        font-size: 1rem;
-        transition: transform 0.2s, box-shadow 0.2s;
-        border: none;
-        cursor: pointer;
-        gap: 0.5rem;
-        font-family: 'Montserrat', sans-serif;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(122, 196, 219, 0.35);
-    }
-
-    .btn-primary:active {
-        transform: translateY(-1px);
-    }
-
-    .nav-btn {
-        color: white !important;
-        font-weight: 700 !important;
-        padding: 0.8rem 1.8rem !important;
-        background: linear-gradient(135deg, var(--turquoise), var(--cobalt));
-        border-radius: 30px;
-        transition: all 0.3s ease;
-    }
-
-    .nav-btn:hover {
-        color: white !important;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(122, 196, 219, 0.35);
-    }
-
-    .nav-btn::after {
-        display: none !important;
-    }
-
-    .menu-toggle {
-        display: none;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        color: var(--dark);
-        cursor: pointer;
-    }
-
-    .hero {
-        background: linear-gradient(135deg, var(--turquoise), var(--cobalt));
-        color: white;
-        padding: 5rem 0 4rem;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .hero::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: 
-            radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 2px, transparent 2px),
-            radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 2px, transparent 2px);
-        background-size: 100px 100px;
-        opacity: 0.3;
-    }
-
-    .hero h1 {
-        font-size: 3rem;
-        margin-bottom: 1.2rem;
-        position: relative;
-        z-index: 1;
-    }
-
-    .hero p {
-        font-size: 1.2rem;
-        margin-bottom: 2.5rem;
-        max-width: 700px;
-        margin-left: auto;
-        margin-right: auto;
-        opacity: 0.95;
-        position: relative;
-        z-index: 1;
-        font-weight: 300;
-    }
-
-    .hero-buttons {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 3rem;
-        position: relative;
-        z-index: 1;
-    }
-
-    .video-wrapper {
-        position: relative;
-        padding-bottom: 56.25%;
-        height: 0;
-        overflow: hidden;
-        border-radius: 16px;
-        margin: 0 auto;
-        max-width: 800px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        transition: var(--transition);
-        background: var(--dark);
-        border: 3px solid white;
-    }
-
-    .video-wrapper:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-    }
-
-    .video-wrapper iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border: none;
-    }
-
-    .video-placeholder {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, var(--navy), var(--cobalt));
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        z-index: 1;
-    }
-
-    .video-placeholder svg {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        color: var(--turquoise);
-    }
-
-    .stats {
-        padding: 3.5rem 0;
-        background: var(--light-gray);
-    }
-
-    .stats-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 2rem;
-        text-align: center;
-    }
-
-    .stat-item {
-        padding: 1.5rem;
-    }
-
-    .stat-item h3 {
-        font-size: 2.5rem;
-        color: var(--cobalt);
-        margin-bottom: 0.5rem;
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 700;
-    }
-
-    .stat-item p {
-        color: var(--navy);
-        font-weight: 500;
-    }
-
-    .section {
-        padding: 4.5rem 0;
-    }
-
-    .section-title {
-        text-align: center;
-        margin-bottom: 3rem;
-        position: relative;
-    }
-
-    .section-title h2 {
-        font-size: 2.2rem;
-        color: var(--navy);
-        margin-bottom: 0.8rem;
-        display: inline-block;
-    }
-
-    .section-title h2::after {
-        content: '';
-        display: block;
-        width: 60px;
-        height: 4px;
-        background: var(--lime);
-        margin: 0.8rem auto;
-        border-radius: 2px;
-    }
-
-    .section-title p {
-        max-width: 700px;
-        margin: 0 auto;
-        color: #555;
-        font-size: 1.1rem;
-        font-weight: 300;
-    }
-
-    .bg-light {
-        background: var(--light-bg);
-    }
-
-    .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 1.8rem;
-    }
-
-    .card {
-        background: white;
-        padding: 2rem;
-        border-radius: 16px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
-        transition: transform 0.4s ease, box-shadow 0.4s ease;
-        border-top: 4px solid transparent;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-icon {
-        font-size: 2.2rem;
-        margin-bottom: 1.2rem;
-        color: var(--cobalt);
-    }
-
-    .card h3 {
-        font-size: 1.3rem;
-        margin-bottom: 0.8rem;
-        color: var(--navy);
-        font-family: 'Montserrat', sans-serif;
-    }
-
-    .card p {
-        color: #555;
-        margin-bottom: 1rem;
-        font-weight: 300;
-    }
-
-    .testimonials {
-        padding: 4.5rem 0;
-    }
-
-    .testimonial-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 2rem;
-    }
-
-    .testimonial {
-        background: white;
-        padding: 2rem;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
-        position: relative;
-        border: 2px solid rgba(122, 196, 219, 0.1);
-    }
-
-    .testimonial::before {
-        content: '"';
-        position: absolute;
-        top: -15px;
-        left: 20px;
-        font-size: 5rem;
-        color: var(--turquoise);
-        opacity: 0.2;
-        font-family: Georgia, serif;
-    }
-
-    .testimonial-text {
-        margin-bottom: 1.5rem;
-        font-style: italic;
-        color: #444;
-        line-height: 1.6;
-        font-weight: 300;
-    }
-
-    .testimonial-author {
-        display: flex;
-        align-items: center;
-    }
-
-    .author-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--turquoise), var(--cobalt));
-        margin-right: 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-        font-family: 'Montserrat', sans-serif;
-    }
-
-    .author-info h4 {
-        margin-bottom: 0.2rem;
-        color: var(--navy);
-        font-family: 'Montserrat', sans-serif;
-    }
-
-    .author-info p {
-        color: #666;
-        font-size: 0.9rem;
-        font-weight: 300;
-    }
-
-    .cta {
-        padding: 5rem 0;
-        text-align: center;
-        background: linear-gradient(135deg, var(--navy), var(--cobalt));
-        color: white;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .cta::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: 
-            radial-gradient(circle at 10% 90%, rgba(255, 255, 255, 0.1) 2px, transparent 2px),
-            radial-gradient(circle at 90% 10%, rgba(255, 255, 255, 0.1) 2px, transparent 2px);
-        background-size: 80px 80px;
-        opacity: 0.3;
-    }
-
-    .cta h2 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        position: relative;
-        z-index: 1;
-    }
-
-    .cta p {
-        font-size: 1.2rem;
-        margin-bottom: 2.5rem;
-        max-width: 700px;
-        margin-left: auto;
-        margin-right: auto;
-        opacity: 0.9;
-        position: relative;
-        z-index: 1;
-        font-weight: 300;
-    }
-
-    footer {
-        background: var(--navy);
-        color: white;
-        padding: 3rem 0 2rem;
-    }
-
-    .footer-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 2.5rem;
-        margin-bottom: 2.5rem;
-    }
-
-    .footer-logo {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .footer-logo-img {
-        height: 36px;
-        width: auto;
-        filter: brightness(0) invert(1);
-    }
-
-    .footer-section h4 {
-        margin-bottom: 1.2rem;
-        color: white;
-        font-size: 1.1rem;
-        font-family: 'Montserrat', sans-serif;
-    }
-
-    .footer-links {
-        list-style: none;
-    }
-
-    .footer-links li {
-        margin-bottom: 0.6rem;
-    }
-
-    .footer-links a {
-        color: rgba(255, 255, 255, 0.8);
-        text-decoration: none;
-        transition: var(--transition);
-        font-weight: 300;
-    }
-
-    .footer-links a:hover {
-        color: var(--turquoise);
-        padding-left: 5px;
-    }
-
-    .footer-links svg {
-        margin-right: 0.5rem;
-        width: 20px;
-    }
-
-    .footer-bottom {
-        text-align: center;
-        padding-top: 2rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 0.9rem;
-        font-weight: 300;
-    }
-
-    .footer-bottom strong {
-        font-weight: 600;
-        color: white;
-    }
-
-    .color-accent {
-        position: absolute;
-        border-radius: 50%;
-        opacity: 0.1;
-        z-index: 0;
-    }
-
-    .color-accent-1 {
-        width: 300px;
-        height: 300px;
-        background: var(--turquoise);
-        top: -150px;
-        right: -150px;
-    }
-
-    .color-accent-2 {
-        width: 200px;
-        height: 200px;
-        background: var(--lime);
-        bottom: -100px;
-        left: -100px;
-    }
-
-    .fade-in {
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-
-    .fade-in.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    @media (max-width: 992px) {
-        .hero h1 {
-            font-size: 2.5rem;
-        }
-        
-        .section {
-            padding: 3.5rem 0;
+import { useState, useEffect } from 'react';
+import FeatureCard from '../components/FeatureCard';
+import TestimonialCard from '../components/TestimonialCard';
+import { preserveRef } from '../utils/url';
+
+// URL utility mock (Preserving logic as requested)
+// const preserveRef = (path: string) => path; 
+
+// Animation Variants
+const fadeIn = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } }
+};
+
+const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
         }
     }
-
-    @media (max-width: 768px) {
-        .container {
-            width: 90%;
-        }
-        
-        .nav-links {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            background: white;
-            flex-direction: column;
-            padding: 1.5rem;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            gap: 1rem;
-        }
-        
-        .nav-links.active {
-            display: flex;
-        }
-        
-        .menu-toggle {
-            display: block;
-        }
-        
-        .hero h1 {
-            font-size: 2.2rem;
-        }
-        
-        .hero p {
-            font-size: 1.1rem;
-        }
-        
-        .hero-buttons {
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .hero-buttons a {
-            width: 100%;
-            max-width: 300px;
-        }
-        
-        .footer-container {
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
-        
-        .nav-btn {
-            margin-top: 0.5rem;
-            text-align: center;
-            justify-content: center;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .hero {
-            padding: 4rem 0 3rem;
-        }
-        
-        .hero h1 {
-            font-size: 1.9rem;
-        }
-        
-        .section-title h2 {
-            font-size: 1.8rem;
-        }
-        
-        .stat-item h3 {
-            font-size: 2rem;
-        }
-        
-        .cta h2 {
-            font-size: 2rem;
-        }
-        
-        .btn-primary {
-            padding: 0.8rem 1.5rem;
-            font-size: 0.95rem;
-        }
-        
-        .nav-btn {
-            padding: 0.7rem 1.5rem !important;
-        }
-        
-        .logo-img {
-            height: 36px;
-        }
-    }
-`;
+};
 
 export default function DDSHome() {
     const [menuOpen, setMenuOpen] = useState(false);
-    const [scrollY, setScrollY] = useState(0);
+    const [isScrolled, setIsScrolled] = useState(false);
 
-    // Get referral code from URL if it exists
-    const getRefLink = (basePath: string) => {
+    // Dynamic Greeting Logic
+    const getRefLink = (basePath: string): string => {
         if (typeof window !== 'undefined') {
             const urlParams = new URLSearchParams(window.location.search);
             const ref = urlParams.get('ref');
-            if (ref) {
-                return `${basePath}?started=true&ref=${encodeURIComponent(ref)}`;
-            }
-            if (basePath === '/welcome') {
-                return `${basePath}?started=true`;
-            }
+            if (ref) return `${basePath}?started=true&ref=${encodeURIComponent(ref)}`;
+            if (basePath === '/welcome') return `${basePath}?started=true`;
         }
         return basePath;
     };
 
     useEffect(() => {
-        const handleScroll = () => setScrollY(window.scrollY);
+        const handleScroll = () => setIsScrolled(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    useEffect(() => {
-        const elements = document.querySelectorAll('.fade-in');
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            },
-            { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
-        );
-
-        elements.forEach((el) => observer.observe(el));
-        return () => observer.disconnect();
-    }, []);
-
     return (
-        <>
-            <style>{styles}</style>
-            
+        <div className="min-h-screen bg-zinc-50 dark:bg-neutral-900 text-slate-900 selection:bg-indigo-100 font-sans">
             {/* Header */}
-            <header style={{ 
-                padding: scrollY > 50 ? '0.8rem 0' : '1.2rem 0',
-                boxShadow: scrollY > 50 ? '0 4px 20px rgba(0, 0, 0, 0.1)' : '0 4px 20px rgba(0, 0, 0, 0.05)'
-            }}>
-                <div className="container header-container">
-                    <div className="logo-container">
+            <header 
+                className={`fixed top-0 z-50 w-full transition-all duration-300 ${
+                    isScrolled 
+                    ? 'bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md border-b border-slate-200 dark:border-neutral-700 py-3' 
+                    : 'bg-transparent py-5'
+                }`}
+            >
+                <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+                    <div className="flex items-center">
                         <img
                             src="https://daya.africa/wp-content/uploads/2024/10/cropped-Daya-Main-Logo.png"
                             alt="Daya Logo"
-                            className="logo-img"
+                            className="h-10 w-auto"
                         />
                     </div>
 
+                    {/* Desktop Nav */}
+                    <nav className="hidden md:flex items-center space-x-8">
+                        <a href="#who-its-for" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Who it's for</a>
+                        <a href="#testimonials" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Testimonials</a>
+                        <a 
+                            href={getRefLink('/welcome')} 
+                            className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 hover:-translate-y-0.5 transition-all active:scale-95"
+                        >
+                            Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                        </a>
+                    </nav>
+
+                    {/* Mobile Toggle */}
                     <button
-                        className="menu-toggle"
+                        className="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
                         onClick={() => setMenuOpen(!menuOpen)}
                         aria-label="Toggle menu"
                     >
                         {menuOpen ? <X size={24} /> : <Menu size={24} />}
                     </button>
-
-                    <nav className={`nav-links ${menuOpen ? 'active' : ''}`}>
-                        <a href="#who-its-for" onClick={() => setMenuOpen(false)}>Who it's for</a>
-                        <a href="#testimonials" onClick={() => setMenuOpen(false)}>Testimonials</a>
-                        <a href={getRefLink('/welcome')} className="btn-primary nav-btn" onClick={() => setMenuOpen(false)}>
-                            Get Started <ArrowRight size={20} />
-                        </a>
-                    </nav>
                 </div>
             </header>
 
+            {/* Mobile Menu Overlay */}
+            <AnimatePresence>
+                {menuOpen && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="fixed inset-0 z-40 bg-white pt-24 px-6 md:hidden"
+                    >
+                        <nav className="flex flex-col space-y-6 text-center">
+                            <a href="#who-its-for" onClick={() => setMenuOpen(false)} className="text-xl font-semibold">Who it's for</a>
+                            <a href="#testimonials" onClick={() => setMenuOpen(false)} className="text-xl font-semibold">Testimonials</a>
+                            <a href={getRefLink('/welcome')} className="bg-indigo-600 text-white py-4 rounded-xl font-bold shadow-xl">
+                                Get Started
+                            </a>
+                        </nav>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Hero Section */}
-            <section className="hero">
-                <div className="color-accent color-accent-1"></div>
-                <div className="color-accent color-accent-2"></div>
-                <div className="container fade-in">
-                    <h1>Find your first users, fans, and responses</h1>
-                    <p>Community-led distribution across Kenya — from hyperlocal to national. Connect with real people where they are.</p>
+            <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+                <div className="absolute top-0 right-0 -z-10 h-96 w-96 rounded-full bg-indigo-50 opacity-50 blur-3xl" />
+                <div className="absolute bottom-0 left-0 -z-10 h-72 w-72 rounded-full bg-blue-50 opacity-50 blur-3xl" />
+                
+                <div className="max-w-7xl mx-auto px-6">
+                    <motion.div 
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={fadeIn}
+                        className="text-center mb-16"
+                    >
+                        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 max-w-4xl mx-auto leading-[1.1] text-slate-900 dark:text-white">
+                            Find your first users, <span className="text-indigo-600 underline decoration-indigo-200">fans</span>, and responses
+                        </h1>
+                        <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
+                            Community-led distribution across Kenya — from hyperlocal to national. Connect with real people where they are.
+                        </p>
+                        <div className="flex justify-center">
+                            <a href={getRefLink('/welcome')} className="group inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-lg font-bold text-white shadow-2xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 hover:scale-105 transition-all">
+                                Get Started <Rocket className="ml-3 group-hover:animate-bounce h-5 w-5" />
+                            </a>
+                        </div>
+                    </motion.div>
 
-                    <div className="hero-buttons">
-                        <a href={getRefLink('/welcome')} className="btn-primary">
-                            Get Started <Rocket size={20} />
-                        </a>
-                    </div>
-
-                    <div className="video-wrapper">
-                        <div className="video-placeholder" id="videoPlaceholder">
-                            <Play size={48} />
-                            <p>Loading video...</p>
+                    {/* Video Section */}
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        className="relative max-w-4xl mx-auto aspect-video bg-gradient-to-t dark:from-neutral-900 dark:to-neutral-800 from-green-50 to-blue-50 dark:border-neutral-700 border rounded-xl overflow-hidden shadow-2xl ring-1 ring-slate-200 group"
+                    >
+                        <div className="absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-white z-0 group-hover:scale-105 transition-transform duration-700">
+                            <Play className="h-16 w-16 text-indigo-400 mb-4 animate-pulse" />
+                            <p className="text-sm font-medium uppercase tracking-widest">Loading Presentation</p>
                         </div>
                         <iframe
-                            src="https://www.youtube.com/embed/V_oDGl1hm5o?rel=0&modestbranding=1"
-                            title="Daya Distribution Video"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            className="relative z-10 w-full h-full"
+                            src="https://www.youtube.com/embed/V_oDGl1hm5o?rel=0"
+                            title="Daya Distribution"
                             allowFullScreen
-                            loading="lazy"
-                            onLoad={() => {
-                                const placeholder = document.getElementById('videoPlaceholder');
-                                if (placeholder) placeholder.style.display = 'none';
-                            }}
-                        ></iframe>
-                    </div>
+                        />
+                    </motion.div>
                 </div>
             </section>
 
             {/* Stats Section */}
-            <section className="stats">
-                <div className="container stats-container">
-                    <div className="stat-item fade-in">
-                        <h3>10,000+</h3>
-                        <p>Community Activations</p>
-                    </div>
-                    <div className="stat-item fade-in">
-                        <h3>85%</h3>
-                        <p>Verified Completion Rate</p>
-                    </div>
-                    <div className="stat-item fade-in">
-                        <h3>50+</h3>
-                        <p>Towns Covered</p>
-                    </div>
-                    <div className="stat-item fade-in">
-                        <h3>200+</h3>
-                        <p>Trusted Distributors</p>
-                    </div>
+            <section className="py-16 bg-indigo-500 dark:bg-transparent dark:bg-[radial-gradient(#fff_1px,transparent_1px)] bg-[size:20px_20px]">
+                <div className="max-w-7xl mx-auto px-6">
+                    <motion.div 
+                        variants={staggerContainer}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center"
+                    >
+                        {[
+                            { val: "10,000+", label: "Activations" },
+                            { val: "85%", label: "Verified Rate" },
+                            { val: "50+", label: "Towns Covered" },
+                            { val: "200+", label: "Distributors" }
+                        ].map((stat, i) => (
+                            <motion.div key={i} variants={fadeIn} className="p-4 bg-gradient-to-t dark:from-neutral-900 dark:to-neutral-800 from-green-50 to-blue-50 dark:border-neutral-700 border rounded-xl">
+                                <div className="text-3xl md:text-4xl font-black text-indigo-600 mb-1">{stat.val}</div>
+                                <div className="text-sm font-bold uppercase tracking-widest text-slate-500">{stat.label}</div>
+                            </motion.div>
+                        ))}
+                    </motion.div>
                 </div>
             </section>
 
-            {/* Built for early traction */}
-            <section className="section container fade-in">
-                <div className="section-title">
-                    <h2>Built for early traction</h2>
-                    <p>Daya Distribution helps startups, creators, and organisations find real adoption — not just impressions.</p>
-                </div>
+            {/* Traction Section */}
+            <section className="py-24 max-w-7xl mx-auto px-6">
+                <motion.div 
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    variants={fadeIn}
+                    className="text-center mb-16"
+                >
+                    <h2 className="text-3xl md:text-4xl font-extrabold mb-4 text-slate-900 dark:text-white">Built for early traction</h2>
+                    <p className="text-muted-foreground max-w-2xl mx-auto">Daya Distribution helps startups, creators, and organisations find real adoption — not just impressions.</p>
+                </motion.div>
 
-                <div className="cards">
-                    <div className="card" style={{ borderTopColor: 'var(--turquoise)' }}>
-                        <div className="card-icon">
-                            <BarChart3 size={32} />
-                        </div>
-                        <h3>First app downloads</h3>
-                        <p>Get genuine users for your app from offline communities across Kenya.</p>
-                    </div>
-
-                    <div className="card" style={{ borderTopColor: 'var(--cobalt)' }}>
-                        <div className="card-icon">
-                            <Users size={32} />
-                        </div>
-                        <h3>First fans & listeners</h3>
-                        <p>Build an authentic audience for your music, podcast, or content.</p>
-                    </div>
-
-                    <div className="card" style={{ borderTopColor: 'var(--lime)' }}>
-                        <div className="card-icon">
-                            <CheckSquare size={32} />
-                        </div>
-                        <h3>Community surveys</h3>
-                        <p>Collect reliable data and insights directly from target communities.</p>
-                    </div>
-
-                    <div className="card" style={{ borderTopColor: 'var(--yellow)' }}>
-                        <div className="card-icon">
-                            <TrendingUp size={32} />
-                        </div>
-                        <h3>Demand validation</h3>
-                        <p>Test your product or service with real people before scaling.</p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Who it's for */}
-            <section className="section bg-light" id="who-its-for">
-                <div className="container fade-in">
-                    <div className="section-title">
-                        <h2>Who it's for</h2>
-                        <p>Daya Distribution serves a diverse range of innovators building for Kenyan communities.</p>
-                    </div>
-
-                    <div className="cards">
-                        <div className="card" style={{ borderTopColor: 'var(--cobalt)' }}>
-                            <div className="card-icon">
-                                <Rocket size={32} />
-                            </div>
-                            <h3>Startups</h3>
-                            <p>Validate demand and acquire your first 1000 users with measurable results.</p>
-                        </div>
-
-                        <div className="card" style={{ borderTopColor: 'var(--lime)' }}>
-                            <div className="card-icon">
-                                <Music size={32} />
-                            </div>
-                            <h3>Musicians & Creators</h3>
-                            <p>Build loyal fans and listeners beyond digital platforms.</p>
-                        </div>
-
-                        <div className="card" style={{ borderTopColor: 'var(--turquoise)' }}>
-                            <div className="card-icon">
-                                <HandshakeIcon size={32} />
-                            </div>
-                            <h3>NGOs & Researchers</h3>
-                            <p>Run community surveys and collect reliable field data.</p>
-                        </div>
-
-                        <div className="card" style={{ borderTopColor: 'var(--yellow)' }}>
-                            <div className="card-icon">
-                                <QrCode size={32} />
-                            </div>
-                            <h3>Apps & Services</h3>
-                            <p>Reach offline communities through QR-enabled physical spaces.</p>
-                        </div>
-                    </div>
-                </div>
+                <motion.div 
+                    variants={staggerContainer}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
+                >
+                    <FeatureCard 
+                        icon={<BarChart3 />} 
+                        title="First app downloads" 
+                        desc="Get genuine users for your app from offline communities across Kenya." 
+                        accent="border-indigo-400"
+                    />
+                    <FeatureCard 
+                        icon={<Users />} 
+                        title="First fans & listeners" 
+                        desc="Build an authentic audience for your music, podcast, or content." 
+                        accent="border-emerald-400"
+                    />
+                    <FeatureCard 
+                        icon={<CheckSquare />} 
+                        title="Community surveys" 
+                        desc="Collect reliable data and insights directly from target communities." 
+                        accent="border-blue-400"
+                    />
+                    <FeatureCard 
+                        icon={<TrendingUp />} 
+                        title="Demand validation" 
+                        desc="Test your product or service with real people before scaling." 
+                        accent="border-amber-400"
+                    />
+                </motion.div>
             </section>
 
             {/* Testimonials */}
-            <section className="testimonials" id="testimonials">
-                <div className="container fade-in">
-                    <div className="section-title">
-                        <h2>Trusted by Kenyan Innovators</h2>
-                        <p>See what our partners say about working with Daya Distribution.</p>
+            <section id="testimonials" className="py-24 bg-neutral-900 text-white">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl md:text-4xl font-bold mb-4">Trusted by Kenyan Innovators</h2>
+                        <div className="h-1 w-20 bg-indigo-500 mx-auto rounded-full" />
                     </div>
 
-                    <div className="testimonial-cards">
-                        <div className="testimonial">
-                            <div className="testimonial-text">
-                                "Daya helped us validate our farming app with real smallholder farmers in Western Kenya. We got 500+ genuine downloads and invaluable feedback in just two weeks."
-                            </div>
-                            <div className="testimonial-author">
-                                <div className="author-avatar">JK</div>
-                                <div className="author-info">
-                                    <h4>James Kariuki</h4>
-                                    <p>Co-founder, AgriTech Solutions</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="testimonial">
-                            <div className="testimonial-text">
-                                "As an independent musician, building a fanbase was challenging. Daya helped me reach listeners in 15 towns across Kenya. My streams increased by 300%!"
-                            </div>
-                            <div className="testimonial-author">
-                                <div className="author-avatar">NM</div>
-                                <div className="author-info">
-                                    <h4>Naomi Mwangi</h4>
-                                    <p>Independent Artist</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="testimonial">
-                            <div className="testimonial-text">
-                                "We needed reliable survey data from rural communities for our research. Daya provided verified responses from 8 counties with transparent methodology."
-                            </div>
-                            <div className="testimonial-author">
-                                <div className="author-avatar">PO</div>
-                                <div className="author-info">
-                                    <h4>Public Health Organization</h4>
-                                    <p>Research Division</p>
-                                </div>
-                            </div>
-                        </div>
+                    <div className="grid lg:grid-cols-3 gap-8">
+                        <TestimonialCard 
+                            name="James Kariuki" 
+                            role="Co-founder, AgriTech" 
+                            initials="JK"
+                            text="Daya helped us validate our farming app with real smallholder farmers. We got 500+ genuine downloads in two weeks."
+                        />
+                        <TestimonialCard 
+                            name="Naomi Mwangi" 
+                            role="Independent Artist" 
+                            initials="NM"
+                            text="As an independent musician, building a fanbase was challenging. Daya helped me reach listeners in 15 towns."
+                        />
+                        <TestimonialCard 
+                            name="Research Div" 
+                            role="Public Health Org" 
+                            initials="PH"
+                            text="We needed reliable survey data from rural communities. Daya provided verified responses from 8 counties."
+                        />
                     </div>
                 </div>
             </section>
 
-            {/* CTA Section */}
-            <section className="cta" id="cta">
-                <div className="container fade-in">
-                    <h2>Ready to find your first users?</h2>
-                    <p>Join hundreds of innovators who have found authentic adoption through community-led distribution.</p>
-                    <a href={getRefLink('/campaign/submit')} className="btn-primary">
-                        Start Your Campaign <ArrowRight size={20} />
+            {/* Final CTA */}
+            <section className="py-24 relative overflow-hidden bg-indigo-500 dark:bg-transparent dark:bg-[radial-gradient(#fff_1px,transparent_1px)] bg-[size:20px_20px] text-center px-6">
+                <div className="absolute inset-0 opacity-10" />
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="relative z-10 max-w-3xl mx-auto"
+                >
+                    <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6">Ready to find your first users?</h2>
+                    <p className="text-indigo-100 text-lg mb-10">Join hundreds of innovators who have found authentic adoption through community-led distribution.</p>
+                    <a href={preserveRef('/campaign/submit')} className="inline-flex items-center px-8 py-4 bg-white text-indigo-600 rounded-full font-bold text-lg shadow-2xl hover:bg-slate-50 transition-all active:scale-95">
+                        Start Your Campaign <ArrowRight className="ml-2 h-5 w-5" />
                     </a>
-                </div>
+                </motion.div>
             </section>
 
             {/* Footer */}
-            <footer>
-                <div className="container">
-                    <div className="footer-container">
-                        <div className="footer-section">
-                            <div className="footer-logo">
-                                <img
-                                    src="https://daya.africa/wp-content/uploads/2024/10/cropped-Daya-Main-Logo.png"
-                                    alt="Daya Logo"
-                                    className="footer-logo-img"
-                                />
-                            </div>
-                            <p>Community-led distribution across Kenya — from hyperlocal to national.</p>
-                        </div>
-
-                        <div className="footer-section">
-                            <h4>Product</h4>
-                            <ul className="footer-links">
-                                <li><a href="#who-its-for">Who it's for</a></li>
-                                <li><a href="#testimonials">Testimonials</a></li>
-                                <li><a href="#cta">Get Started</a></li>
-                            </ul>
-                        </div>
-
-                        <div className="footer-section">
-                            <h4>Company</h4>
-                            <ul className="footer-links">
-                                <li><a href="#">About Daya</a></li>
-                                <li><a href="#">Blog</a></li>
-                                <li><a href="#">Careers</a></li>
-                                <li><a href="#">Contact</a></li>
-                            </ul>
-                        </div>
-
-                        <div className="footer-section">
-                            <h4>Connect</h4>
-                            <ul className="footer-links">
-                                <li><a href="#">Twitter</a></li>
-                                <li><a href="#">LinkedIn</a></li>
-                                <li><a href="#">Instagram</a></li>
-                                <li><a href="#">Email</a></li>
-                            </ul>
-                        </div>
+            <footer className="bg-neutral-950 text-slate-400 py-16 px-6 border-t border-neutral-900">
+                <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-12 mb-12">
+                    <div className="col-span-1 md:col-span-2">
+                        <img
+                            src="https://daya.africa/wp-content/uploads/2024/10/cropped-Daya-Main-Logo.png"
+                            alt="Daya Logo"
+                            className="h-8 mb-6 brightness-0 invert"
+                        />
+                        <p className="max-w-sm">Community-led distribution across Kenya — from hyperlocal to national.</p>
                     </div>
-
-                    <div className="footer-bottom">
-                        <p><strong>Daya Distribution</strong> — Part of the Daya ecosystem</p>
-                        <p>© Daya Africa 2025. All rights reserved.</p>
+                    <div>
+                        <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-xs">Product</h4>
+                        <ul className="space-y-3 text-sm">
+                            <li><a href="#who-its-for" className="hover:text-white transition-colors">Who it's for</a></li>
+                            <li><a href="#testimonials" className="hover:text-white transition-colors">Testimonials</a></li>
+                            <li><a href="#" className="hover:text-white transition-colors">Campaigns</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-xs">Company</h4>
+                        <ul className="space-y-3 text-sm">
+                            <li><a href="#" className="hover:text-white transition-colors">About</a></li>
+                            <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+                            <li><a href="#" className="hover:text-white transition-colors">Terms</a></li>
+                        </ul>
                     </div>
                 </div>
+                <div className="max-w-7xl mx-auto pt-8 border-t border-slate-900 text-center text-xs">
+                    <p>© 2026 Daya Distribution. Built for innovators in Kenya.</p>
+                </div>
             </footer>
-        </>
+        </div>
     );
 }
+
+// Reusable Sub-components
+// Components moved to separate files: FeatureCard.tsx and TestimonialCard.tsx
