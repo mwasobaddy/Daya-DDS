@@ -185,8 +185,8 @@ export default function BusinessInformationStep({ value, onChange, onNext, onBac
         if (Object.keys(newErrors).length === 0) {
             setLoading(true);
             const businessTypeData = {
-                types: businessTypesSelected,
                 ...(businessTypesSelected.includes('other') && otherBusinessType.trim() ? { custom: otherBusinessType.trim() } : {}),
+                types: businessTypesSelected,
             };
 
             const formData: BusinessInformationData = {

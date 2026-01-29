@@ -129,8 +129,8 @@ const getStringArray = (value: unknown): string[] => {
 
 export default function TargetingBudgetStep({ value, onChange, onNext, onBack }: Props) {
   const [selectedSafetyPreferences, setSelectedSafetyPreferences] = useState<string[]>(getStringArray(value.selectedSafetyPreferences));
-  const [selectedBusinessTypes, setSelectedBusinessTypes] = useState<string[]>(getStringArray(value.businessTarget?.types) || getStringArray(value.selectedBusinessTypes));
-  const [otherBusinessType, setOtherBusinessType] = useState(String(value.businessTarget?.custom ?? value.otherBusinessType ?? ''));
+  const [selectedBusinessTypes, setSelectedBusinessTypes] = useState<string[]>(getStringArray((value.businessTarget as { types?: unknown })?.types) || getStringArray(value.selectedBusinessTypes));
+  const [otherBusinessType, setOtherBusinessType] = useState(String((value.businessTarget as { custom?: unknown })?.custom ?? value.otherBusinessType ?? ''));
   const [totalBudget, setTotalBudget] = useState(String(value.totalBudget ?? ''));
 
   // User's country from account setup
@@ -328,8 +328,8 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
     onChange({
       selectedSafetyPreferences,
       businessTarget: {
+        ...(selectedBusinessTypes.includes('other') && otherBusinessType.trim() ? { custom: otherBusinessType.trim() } : {}),
         types: selectedBusinessTypes,
-        custom: selectedBusinessTypes.includes('other') && otherBusinessType.trim() ? otherBusinessType.trim() : null,
       },
       totalBudget: parseFloat(totalBudget),
       targetCountry,
