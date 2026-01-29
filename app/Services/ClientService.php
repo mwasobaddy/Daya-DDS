@@ -68,6 +68,14 @@ class ClientService
             // Calculate scan allocated
             $scanAllocated = (int) floor($creditsAllocated / $costPerScan);
 
+            // Prepare business target data
+            $businessTarget = [
+                'types' => $data['selectedBusinessTypes'],
+            ];
+            if (in_array('other', $data['selectedBusinessTypes']) && ! empty($data['otherBusinessType'])) {
+                $businessTarget['custom'] = $data['otherBusinessType'];
+            }
+
             // Create campaign record
             $campaign = Campaign::create([
                 'client_id' => $client->id,
@@ -87,7 +95,7 @@ class ClientService
                 'county_target' => $data['targetCounty'] ?? null,
                 'subcounty_target' => $data['targetSubcounty'] ?? null,
                 'ward_target' => $data['targetWard'] ?? null,
-                'business_target' => $data['selectedBusinessTypes'],
+                'business_target' => $businessTarget,
                 'status' => 'pending',
                 'cost_per_scan' => (string) $costPerScan,
                 'credits_allocated' => $creditsAllocated,

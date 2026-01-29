@@ -232,7 +232,7 @@ export default function BusinessInformationStep({ value, onChange, onNext, onBac
                 <div className="flex flex-col gap-2">
                     <div className="flex items-center justify-between">
                         <Label className="text-base font-medium">
-                            Business Type Targeting <span className="text-red-500">*</span>
+                            Business Type<span className="text-red-500">*</span>
                         </Label>
                         <button
                             type="button"

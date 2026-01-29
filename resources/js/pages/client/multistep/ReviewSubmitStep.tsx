@@ -61,8 +61,8 @@ export default function ReviewSubmitStep({ value, onBack, onEditStep }: Props) {
         endDate: String(value.endDate || ''),
         targetAudience: String(value.targetAudience || ''),
         selectedSafetyPreferences: Array.isArray(value.selectedSafetyPreferences) ? value.selectedSafetyPreferences : [],
-        selectedBusinessTypes: Array.isArray(value.selectedBusinessTypes) ? value.selectedBusinessTypes : [],
-        otherBusinessType: String(value.otherBusinessType || ''),
+        selectedBusinessTypes: Array.isArray(value.businessTarget?.types) ? value.businessTarget.types : (Array.isArray(value.selectedBusinessTypes) ? value.selectedBusinessTypes : []),
+        otherBusinessType: String(value.businessTarget?.custom ?? value.otherBusinessType ?? ''),
         totalBudget: Number(value.totalBudget || 0),
         targetCountry: value.targetCountry ? String(value.targetCountry) : null,
         targetCounty: value.targetCounty ? String(value.targetCounty) : null,
@@ -267,13 +267,24 @@ export default function ReviewSubmitStep({ value, onBack, onEditStep }: Props) {
             <div>
               <span className="font-medium text-gray-700 dark:text-neutral-300">Business Types:</span>
               <div className="flex flex-wrap gap-2 mt-1">
-                {Array.isArray(value.selectedBusinessTypes) && value.selectedBusinessTypes.length > 0
-                  ? value.selectedBusinessTypes.map((type, index) => (
+                {Array.isArray(value.businessTarget?.types) && value.businessTarget.types.length > 0
+                  ? value.businessTarget.types.map((type, index) => (
                       <Badge variant={'secondary'} key={index}>{String(type)}</Badge>
                     ))
-                  : <p className="text-gray-600 dark:text-neutral-400">Not specified</p>
+                  : (Array.isArray(value.selectedBusinessTypes) && value.selectedBusinessTypes.length > 0
+                      ? value.selectedBusinessTypes.map((type, index) => (
+                          <Badge variant={'secondary'} key={index}>{String(type)}</Badge>
+                        ))
+                      : <p className="text-gray-600 dark:text-neutral-400">Not specified</p>
+                    )
                 }
               </div>
+              {value.businessTarget?.custom && (
+                <div className="mt-2">
+                  <span className="font-medium text-gray-700 dark:text-neutral-300">Other Business Type:</span>
+                  <p className="text-gray-600 dark:text-neutral-400">{String(value.businessTarget.custom)}</p>
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

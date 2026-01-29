@@ -121,8 +121,8 @@ const currencyRates: Record<string, number> = {
 
 export default function TargetingBudgetStep({ value, onChange, onNext, onBack }: Props) {
   const [selectedSafetyPreferences, setSelectedSafetyPreferences] = useState<string[]>(Array.isArray(value.selectedSafetyPreferences) ? value.selectedSafetyPreferences as string[] : []);
-  const [selectedBusinessTypes, setSelectedBusinessTypes] = useState<string[]>(Array.isArray(value.selectedBusinessTypes) ? value.selectedBusinessTypes as string[] : []);
-  const [otherBusinessType, setOtherBusinessType] = useState(String(value.otherBusinessType ?? ''));
+  const [selectedBusinessTypes, setSelectedBusinessTypes] = useState<string[]>(Array.isArray(value.businessTarget?.types) ? value.businessTarget.types as string[] : (Array.isArray(value.selectedBusinessTypes) ? value.selectedBusinessTypes as string[] : []));
+  const [otherBusinessType, setOtherBusinessType] = useState(String(value.businessTarget?.custom ?? value.otherBusinessType ?? ''));
   const [totalBudget, setTotalBudget] = useState(String(value.totalBudget ?? ''));
 
   // User's country from account setup
@@ -319,8 +319,10 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
     setLoading(true);
     onChange({
       selectedSafetyPreferences,
-      selectedBusinessTypes,
-      otherBusinessType: selectedBusinessTypes.includes('other') ? otherBusinessType.trim() : '',
+      businessTarget: {
+        types: selectedBusinessTypes,
+        custom: selectedBusinessTypes.includes('other') && otherBusinessType.trim() ? otherBusinessType.trim() : null,
+      },
       totalBudget: parseFloat(totalBudget),
       targetCountry,
       targetCountryName: countries.find(c => String(c.id) === targetCountry)?.name || targetCountry,
@@ -574,7 +576,7 @@ export default function TargetingBudgetStep({ value, onChange, onNext, onBack }:
           onClick={onBack}
           disabled={loading}
           variant="outline"
-          className="px-6 py-2.5 border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+          className="px-6 py-2.5"
         >
           Back
         </Button>

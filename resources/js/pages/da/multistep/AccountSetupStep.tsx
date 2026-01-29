@@ -177,9 +177,9 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
   };
 
   const validateNationalId = async (nationalIdValue: string) => {
-    console.log('validateNationalId called with:', nationalIdValue);
+    // console.log('validateNationalId called with:', nationalIdValue);
     if (!nationalIdValue || !/^\d+$/.test(nationalIdValue)) {
-      console.log('National ID validation skipped - invalid format or empty');
+      // console.log('National ID validation skipped - invalid format or empty');
       return;
     }
 
@@ -193,10 +193,10 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
         body: JSON.stringify({ national_id: nationalIdValue }),
       });
 
-      console.log('API response status:', response.status);
+      // console.log('API response status:', response.status);
       if (response.ok) {
         const data = await response.json();
-        console.log('API response data:', data);
+        // console.log('API response data:', data);
         if (!data.valid) {
           setErrors(prev => ({ ...prev, nationalId: data.message }));
         } else {
