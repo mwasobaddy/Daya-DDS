@@ -48,9 +48,11 @@ class DaAccountSetupNotification extends Notification implements ShouldQueue
             ->line('**Next Steps:**')
             ->line('1. Complete your profile setup')
             ->line('2. Start referring friends and family')
-            ->line('3. Monitor your earnings in the dashboard')
+            ->line('3. Share your referral link to earn commissions')
             ->line('4. Join our DA community for tips and support')
-            ->action('Access Your Dashboard', url('/dashboard'))
+            ->action('Share Your Referral Link', url('/?ref='.$notifiable->referral_code))
+            ->line('Your unique referral link: '.url('/?ref='.$notifiable->referral_code))
+            ->line('Share this link with friends and family to earn commissions when they join!')
             ->line('If you have any questions, feel free to contact our support team.')
             ->salutation('Best regards, The Daya DDS Team');
     }

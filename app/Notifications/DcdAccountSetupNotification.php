@@ -65,8 +65,10 @@ class DcdAccountSetupNotification extends Notification implements ShouldQueue
             ->line('1. Complete your business profile setup')
             ->line('2. Set up your content distribution preferences')
             ->line('3. Start distributing content and earning revenue')
-            ->line('4. Monitor your earnings in the dashboard')
-            ->action('Access Your Dashboard', url('/dashboard'))
+            ->line('4. Share your referral link to earn commissions')
+            ->action('Share Your Referral Link', url('/?ref='.$notifiable->referral_code))
+            ->line('Your unique referral link: '.url('/?ref='.$notifiable->referral_code))
+            ->line('Share this link with potential DAs and DCDs to earn referral commissions!')
             ->line('If you have any questions, feel free to contact our support team.')
             ->salutation('Best regards, The Daya DDS Team');
 
