@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class Client extends Model
 {
+    use HasFactory, Notifiable;
+
     protected $table = 'client';
 
     protected $fillable = [
@@ -23,6 +27,11 @@ class Client extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function campaigns()
+    {
+        return $this->hasMany(Campaign::class);
     }
 
     // Add relationships for country, county, etc. if models exist
