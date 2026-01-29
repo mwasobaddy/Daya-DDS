@@ -94,6 +94,27 @@ class ClientController extends Controller
         ]);
     }
 
+    public function rejectCampaign(Campaign $campaign)
+    {
+        // Check if already acted upon
+        $existingAction = AdminAction::where('campaign_id', $campaign->id)->first();
+        if ($existingAction) {
+            return Inertia::render('admin/CampaignConflict', [
+                'campaign' => $campaign->load('client'),
+                'adminAction' => [
+                    'action' => $existingAction->action,
+                    'admin' => $existingAction->admin,
+                    'created_at' => $existingAction->acted_at,
+                    'rejection_reason' => $existingAction->rejection_reason,
+                ],
+            ]);
+        }
+
+        return Inertia::render('admin/CampaignReject', [
+            'campaign' => $campaign->load('client'),
+        ]);
+    }
+
     public function processApprove(Campaign $campaign)
     {
         // Check if already acted upon
