@@ -40,10 +40,12 @@ class AdminCampaignNotification extends Notification
             ->line('Objective: '.$this->campaign->campaign_objectives)
             ->line('Budget: '.$this->campaign->budget.' '.$this->campaign->currency)
             ->line('Description: '.$this->campaign->campaign_description)
-            ->action('Approve Campaign', $approveUrl)
-            ->action('Reject Campaign', $rejectUrl)
-            ->line('Please review and take appropriate action.')
-            ->salutation('Best regards, Daya DDS Team');
+            ->view('emails.admin-campaign-notification', [
+                'client' => $this->client,
+                'campaign' => $this->campaign,
+                'approveUrl' => $approveUrl,
+                'rejectUrl' => $rejectUrl,
+            ]);
     }
 
     public function toArray(object $notifiable): array
