@@ -15,14 +15,14 @@ class AdminSeeder extends Seeder
     {
         $admins = [
             [
-                'email' => 'akinola.dixon@gmail.com ',
-                'full_name' => 'Akinola Dixon',
+                'email' => 'family.obadiahs@gmail.com',
+                'full_name' => 'Family Obadiahs',
                 'phone' => '+254700000001',
                 'national_id' => '1000000001',
                 'gender' => 'male',
             ],
             [
-                'email' => 'kelvinramsiel@gmail.com',
+                'email' => 'kelvinramsiel01@gmail.com',
                 'full_name' => 'Kelvin Ramsiel',
                 'phone' => '+254700000002',
                 'national_id' => '1000000002',

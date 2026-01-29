@@ -91,6 +91,7 @@ class ClientController extends Controller
             'campaign' => $campaign->load('client'),
             'dcdAssigned' => $dcd !== null,
             'dcdName' => $dcd?->user->name,
+            'success' => session('success'),
         ]);
     }
 
@@ -154,7 +155,7 @@ class ClientController extends Controller
         // Send confirmation email to client
         $campaign->client->notify(new \App\Notifications\ClientCampaignApprovedNotification($campaign));
 
-        return redirect()->route('home')->with('success', 'Campaign approved successfully.');
+        return redirect()->route('admin.campaign.approve', $campaign)->with('success', 'Campaign approved successfully.');
     }
 
     public function processReject(Request $request, Campaign $campaign)

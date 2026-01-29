@@ -6,7 +6,6 @@ use App\Models\Campaign;
 use App\Models\Client;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\URL;
 
 class AdminCampaignNotification extends Notification
 {
@@ -22,8 +21,8 @@ class AdminCampaignNotification extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $approveUrl = URL::signedRoute('admin.campaign.approve', ['campaign' => $this->campaign->id]);
-        $rejectUrl = URL::signedRoute('admin.campaign.reject', ['campaign' => $this->campaign->id]);
+        $approveUrl = route('admin.campaign.approve', ['campaign' => $this->campaign->id]);
+        $rejectUrl = route('admin.campaign.reject', ['campaign' => $this->campaign->id]);
 
         return (new MailMessage)
             ->subject('New Campaign Registration Requires Review')

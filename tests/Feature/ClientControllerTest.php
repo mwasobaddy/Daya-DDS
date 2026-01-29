@@ -40,7 +40,7 @@ describe('ClientController', function () {
         $client = Client::factory()->create();
         $campaign = Campaign::factory()->create([
             'client_id' => $client->id,
-            'status' => 'pending'
+            'status' => 'pending',
         ]);
 
         $response = $this->actingAs($this->admin)
@@ -62,10 +62,10 @@ describe('ClientController', function () {
             'country_target' => $this->country->id,
             'business_target' => [
                 'custom' => '',
-                'types' => ['kiosk_duka']
+                'types' => ['kiosk_duka'],
             ],
             'campaign_objectives' => 'surveys',
-            'safety_preferences' => ['Kids Appropriate']
+            'safety_preferences' => ['Kids Appropriate'],
         ]);
 
         // Create matching DCD
@@ -77,11 +77,11 @@ describe('ClientController', function () {
             'user_id' => $dcdUser->id,
             'business_type' => [
                 'custom' => '',
-                'types' => ['kiosk_duka']
+                'types' => ['kiosk_duka'],
             ],
             'campaign_types' => ['surveys'],
             'safety_preferences' => ['Kids Appropriate'],
-            'operating_days' => ['Monday']
+            'operating_days' => ['Monday'],
         ]);
 
         $response = $this->actingAs($this->admin)
@@ -100,13 +100,13 @@ describe('ClientController', function () {
         $client = Client::factory()->create();
         $campaign = Campaign::factory()->create([
             'client_id' => $client->id,
-            'status' => 'pending'
+            'status' => 'pending',
         ]);
 
         $response = $this->actingAs($this->admin)
-            ->post(URL::signedRoute('admin.campaign.process-approve', $campaign));
+            ->post(route('admin.campaign.process-approve', $campaign));
 
-        $response->assertRedirect(route('home'));
+        $response->assertRedirect(route('admin.campaign.approve', $campaign));
         $response->assertSessionHas('success', 'Campaign approved successfully.');
 
         $campaign->refresh();
@@ -133,10 +133,10 @@ describe('ClientController', function () {
             'country_target' => $this->country->id,
             'business_target' => [
                 'custom' => '',
-                'types' => ['kiosk_duka']
+                'types' => ['kiosk_duka'],
             ],
             'campaign_objectives' => 'surveys',
-            'safety_preferences' => ['Kids Appropriate']
+            'safety_preferences' => ['Kids Appropriate'],
         ]);
 
         // Create matching DCD
@@ -148,11 +148,11 @@ describe('ClientController', function () {
             'user_id' => $dcdUser->id,
             'business_type' => [
                 'custom' => '',
-                'types' => ['kiosk_duka']
+                'types' => ['kiosk_duka'],
             ],
             'campaign_types' => ['surveys'],
             'safety_preferences' => ['Kids Appropriate'],
-            'operating_days' => ['Monday']
+            'operating_days' => ['Monday'],
         ]);
 
         $response = $this->actingAs($this->admin)
@@ -166,12 +166,12 @@ describe('ClientController', function () {
         $client = Client::factory()->create();
         $campaign = Campaign::factory()->create([
             'client_id' => $client->id,
-            'status' => 'pending'
+            'status' => 'pending',
         ]);
 
         $response = $this->actingAs($this->admin)
-            ->post(URL::signedRoute('admin.campaign.process-reject', $campaign), [
-                'rejection_reason' => 'Campaign does not meet requirements.'
+            ->post(route('admin.campaign.process-reject', $campaign), [
+                'rejection_reason' => 'Campaign does not meet requirements.',
             ]);
 
         $response->assertRedirect(route('home'));
@@ -197,7 +197,7 @@ describe('ClientController', function () {
         $client = Client::factory()->create();
         $campaign = Campaign::factory()->create([
             'client_id' => $client->id,
-            'status' => 'pending'
+            'status' => 'pending',
         ]);
 
         // First approval
@@ -221,7 +221,7 @@ describe('ClientController', function () {
         $client = Client::factory()->create();
         $campaign = Campaign::factory()->create([
             'client_id' => $client->id,
-            'status' => 'pending'
+            'status' => 'pending',
         ]);
 
         // First rejection
@@ -236,7 +236,7 @@ describe('ClientController', function () {
         // Try to reject again
         $response = $this->actingAs($this->admin)
             ->post(URL::signedRoute('admin.campaign.process-reject', $campaign), [
-                'rejection_reason' => 'Another reason'
+                'rejection_reason' => 'Another reason',
             ]);
 
         $response->assertInertia(fn ($page) => $page
@@ -248,7 +248,7 @@ describe('ClientController', function () {
         $client = Client::factory()->create();
         $campaign = Campaign::factory()->create([
             'client_id' => $client->id,
-            'status' => 'approved'
+            'status' => 'approved',
         ]);
 
         AdminAction::create([
