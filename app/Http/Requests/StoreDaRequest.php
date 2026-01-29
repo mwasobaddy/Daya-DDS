@@ -42,7 +42,7 @@ class StoreDaRequest extends FormRequest
             'social_platforms.linkedin' => 'nullable|string|in:Less than 1K,1K-10K,10K-50K,50K-100K,100K+',
             'social_platforms.whatsapp' => 'nullable|string|in:Less than 50,51-100 views,101-200 views,201-500 views,500+ views',
             'preferred_contact_method' => 'required|string|in:WhatsApp,Telegram,Email,Phone',
-            'wallet_type' => 'required|in:Personal,Business,Both',
+            'wallet_type' => 'required|in:personal,business,both',
             'pin' => 'required|string|size:4|regex:/^[0-9]+$/',
         ];
 

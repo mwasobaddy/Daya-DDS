@@ -13,13 +13,13 @@ class PdfService
      */
     public function generateQrCodePdf(User $user, string $qrCodePath): string
     {
-        $fullQrCodeUrl = Storage::disk('public')->url($qrCodePath);
+        $fullQrCodePath = Storage::disk('public')->path($qrCodePath);
 
         // Page 1: Full scale QR code
-        $page1Html = $this->getPage1Html($user, $fullQrCodeUrl);
+        $page1Html = $this->getPage1Html($user, $fullQrCodePath);
 
         // Page 2: Mobile sized QR code
-        $page2Html = $this->getPage2Html($user, $fullQrCodeUrl);
+        $page2Html = $this->getPage2Html($user, $fullQrCodePath);
 
         $fullHtml = $page1Html.$page2Html;
 
@@ -36,7 +36,7 @@ class PdfService
     /**
      * Get HTML for page 1 (full scale QR code)
      */
-    private function getPage1Html(User $user, string $qrCodeUrl): string
+    private function getPage1Html(User $user, string $qrCodePath): string
     {
         return '
         <html>
@@ -59,7 +59,7 @@ class PdfService
             <div class="content">
                 <div class="discover">Discover with Daya</div>
                 <div class="qr-section">
-                    <img src="'.$qrCodeUrl.'" alt="QR Code" class="qr-code" />
+                    <img src="file://'.$qrCodePath.'" alt="QR Code" class="qr-code" />
                 </div>
             </div>
             <div class="footer">
@@ -72,13 +72,13 @@ class PdfService
     /**
      * Get HTML for page 2 (mobile sized QR code)
      */
-    private function getPage2Html(User $user, string $qrCodeUrl): string
+    private function getPage2Html(User $user, string $qrCodePath): string
     {
         return '
         <div style="page-break-before: always;">
             <div style="text-align: center; padding: 100px 20px;">
                 <h2 style="color: #1e40af; margin-bottom: 50px;">Mobile QR Code</h2>
-                <img src="'.$qrCodeUrl.'" alt="Mobile QR Code" style="max-width: 200px; margin: 0 auto;" />
+                <img src="file://'.$qrCodePath.'" alt="Mobile QR Code" style="max-width: 200px; margin: 0 auto;" />
             </div>
         </div>';
     }

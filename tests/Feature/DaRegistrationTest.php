@@ -54,7 +54,7 @@ describe('DA Registration', function () {
             'ward' => 1,
             'social_platforms' => ['twitter' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
-            'wallet_type' => 'Personal',
+            'wallet_type' => 'personal',
             'pin' => '1234',
         ];
 
@@ -87,7 +87,7 @@ describe('DA Registration', function () {
             'ward' => 1,
             'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
-            'wallet_type' => 'Personal',
+            'wallet_type' => 'personal',
             'pin' => '1234',
         ];
 
@@ -115,7 +115,7 @@ describe('DA Registration', function () {
             'ward' => 1,
             'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
-            'wallet_type' => 'Personal',
+            'wallet_type' => 'personal',
             'pin' => '1234',
         ];
 
@@ -147,7 +147,7 @@ describe('DA Registration', function () {
             'ward' => 1,
             'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
-            'wallet_type' => 'Personal',
+            'wallet_type' => 'personal',
             'pin' => '1234',
         ];
 
@@ -188,7 +188,7 @@ describe('DA Registration', function () {
             'ward' => 1,
             'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
-            'wallet_type' => 'Personal',
+            'wallet_type' => 'personal',
             'pin' => '1234',
         ];
 
@@ -241,7 +241,7 @@ describe('DA Registration', function () {
             'ward' => 1,
             'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
-            'wallet_type' => 'Personal',
+            'wallet_type' => 'personal',
             'pin' => '1234',
         ];
 
@@ -287,7 +287,7 @@ describe('DA Registration', function () {
             'ward' => 1,
             'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
-            'wallet_type' => 'Personal',
+            'wallet_type' => 'personal',
             'pin' => '1234',
         ];
 
@@ -320,7 +320,7 @@ describe('DA Registration', function () {
             'ward' => 1,
             'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
-            'wallet_type' => 'Personal',
+            'wallet_type' => 'personal',
             'pin' => '1234',
         ];
 
@@ -354,7 +354,7 @@ describe('DA Registration', function () {
             'ward' => 1,
             'social_platforms' => $socialPlatforms,
             'preferred_contact_method' => $contactMethod,
-            'wallet_type' => 'Personal',
+            'wallet_type' => 'personal',
             'pin' => '1234',
         ];
 
@@ -366,7 +366,7 @@ describe('DA Registration', function () {
         expect($da->user->phone)->toBe('+254700000000');
         expect($da->user->national_id)->toBe('1234567890');
         expect($da->user->gender)->toBe('male');
-        expect($da->user->wallet_type)->toBe('Personal');
+        expect($da->user->wallet_type)->toBe('personal');
         expect($da->user->wallet_pin)->toBe('1234');
         expect($da->social_platforms)->toBe($socialPlatforms);
         expect($da->prefered_contact_method)->toBe($contactMethod);
@@ -391,7 +391,7 @@ describe('DA Registration', function () {
             'ward' => 1,
             'social_platforms' => ['x' => '1K-10K'],
             'preferred_contact_method' => 'WhatsApp',
-            'wallet_type' => 'Personal',
+            'wallet_type' => 'personal',
             'pin' => '1234',
         ];
 

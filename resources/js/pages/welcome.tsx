@@ -4,7 +4,6 @@ import {
     Users,
     CheckSquare,
     TrendingUp,
-    Rocket,
     Play,
     Menu,
     X,
@@ -136,9 +135,20 @@ export default function DDSHome() {
                         <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
                             Community-led distribution across Kenya — from hyperlocal to national. Connect with real people where they are.
                         </p>
-                        <div className="flex justify-center">
+                        {/* <div className="flex justify-center">
                             <a href={getRefLink('/welcome')} className="group inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-lg font-bold text-white shadow-2xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 hover:scale-105 transition-all">
                                 Get Started <Rocket className="ml-3 group-hover:animate-bounce h-5 w-5" />
+                            </a>
+                        </div> */}
+                        <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+                            <a href={preserveRef('/da')} className="inline-flex items-center justify-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                                Join as DA <Users className="ml-2 h-4 w-4" />
+                            </a>
+                            <a href={preserveRef('/dcd')} className="inline-flex items-center justify-center px-6 py-3 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors">
+                                Join as DCD <TrendingUp className="ml-2 h-4 w-4" />
+                            </a>
+                            <a href={preserveRef('/client')} className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                Start as Client <BarChart3 className="ml-2 h-4 w-4" />
                             </a>
                         </div>
                     </motion.div>
@@ -187,6 +197,67 @@ export default function DDSHome() {
                         ))}
                     </motion.div>
                 </div>
+            </section>
+
+            {/* Who it's for Section */}
+            <section className="py-24 max-w-7xl mx-auto px-6">
+                <motion.div
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    variants={fadeIn}
+                    className="text-center mb-16"
+                >
+                    <h2 className="text-3xl md:text-4xl font-extrabold mb-4 text-slate-900 dark:text-white">Choose Your Path</h2>
+                    <p className="text-muted-foreground max-w-2xl mx-auto">Join Daya Distribution as a Digital Ambassador, Content Distributor, or Client</p>
+                </motion.div>
+
+                <motion.div
+                    variants={staggerContainer}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    className="grid md:grid-cols-3 gap-8"
+                >
+                    {/* DA Card */}
+                    <motion.div
+                        variants={fadeIn}
+                        className="bg-gradient-to-t dark:from-neutral-900 dark:to-neutral-800 from-green-50 to-blue-50 dark:border-neutral-700 border rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300"
+                    >
+                        <Users className="h-12 w-12 text-indigo-600 mx-auto mb-4" />
+                        <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Digital Ambassador</h3>
+                        <p className="text-muted-foreground mb-6">Earn commissions by distributing content in your community</p>
+                        <a href={preserveRef('/da')} className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                            Become a DA <ArrowRight className="ml-2 h-4 w-4" />
+                        </a>
+                    </motion.div>
+
+                    {/* DCD Card */}
+                    <motion.div
+                        variants={fadeIn}
+                        className="bg-gradient-to-t dark:from-neutral-900 dark:to-neutral-800 from-green-50 to-blue-50 dark:border-neutral-700 border rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300"
+                    >
+                        <TrendingUp className="h-12 w-12 text-emerald-600 mx-auto mb-4" />
+                        <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Content Distributor</h3>
+                        <p className="text-muted-foreground mb-6">Distribute digital content and earn from engagement</p>
+                        <a href={preserveRef('/dcd')} className="inline-flex items-center px-6 py-3 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors">
+                            Become a DCD <ArrowRight className="ml-2 h-4 w-4" />
+                        </a>
+                    </motion.div>
+
+                    {/* Client Card */}
+                    <motion.div
+                        variants={fadeIn}
+                        className="bg-gradient-to-t dark:from-neutral-900 dark:to-neutral-800 from-green-50 to-blue-50 dark:border-neutral-700 border rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300"
+                    >
+                        <BarChart3 className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+                        <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Client</h3>
+                        <p className="text-muted-foreground mb-6">Launch campaigns and reach real users across Kenya</p>
+                        <a href={preserveRef('/client')} className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                            Start Campaign <ArrowRight className="ml-2 h-4 w-4" />
+                        </a>
+                    </motion.div>
+                </motion.div>
             </section>
 
             {/* Traction Section */}

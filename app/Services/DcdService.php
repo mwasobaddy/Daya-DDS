@@ -53,7 +53,7 @@ class DcdService
                 'subcounty_id' => $data['subcounty'] ?? null,
                 'ward_id' => $data['ward'] ?? null,
                 'referral_code' => $this->generateUniqueReferralCode(),
-                'wallet_type' => 'Business', // DCDs have business wallets
+                'wallet_type' => 'business', // DCDs have business wallets
                 'wallet_status' => 'active',
                 'wallet_pin' => $data['pin'],
                 'wallet_balance' => '0.00',
