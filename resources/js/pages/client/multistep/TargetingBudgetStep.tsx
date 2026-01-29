@@ -119,9 +119,17 @@ const currencyRates: Record<string, number> = {
   'NGN': 10,
 };
 
+// Helper function to safely extract string arrays from unknown values
+const getStringArray = (value: unknown): string[] => {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is string => typeof item === 'string');
+  }
+  return [];
+};
+
 export default function TargetingBudgetStep({ value, onChange, onNext, onBack }: Props) {
-  const [selectedSafetyPreferences, setSelectedSafetyPreferences] = useState<string[]>(Array.isArray(value.selectedSafetyPreferences) ? value.selectedSafetyPreferences as string[] : []);
-  const [selectedBusinessTypes, setSelectedBusinessTypes] = useState<string[]>(Array.isArray(value.businessTarget?.types) ? value.businessTarget.types as string[] : (Array.isArray(value.selectedBusinessTypes) ? value.selectedBusinessTypes as string[] : []));
+  const [selectedSafetyPreferences, setSelectedSafetyPreferences] = useState<string[]>(getStringArray(value.selectedSafetyPreferences));
+  const [selectedBusinessTypes, setSelectedBusinessTypes] = useState<string[]>(getStringArray(value.businessTarget?.types) || getStringArray(value.selectedBusinessTypes));
   const [otherBusinessType, setOtherBusinessType] = useState(String(value.businessTarget?.custom ?? value.otherBusinessType ?? ''));
   const [totalBudget, setTotalBudget] = useState(String(value.totalBudget ?? ''));
 

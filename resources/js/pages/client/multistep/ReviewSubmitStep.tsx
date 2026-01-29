@@ -31,6 +31,14 @@ const getCampaignObjectiveLabel = (id: string): string => {
   return objective ? objective.label : id;
 };
 
+// Helper function to safely extract string arrays from unknown values
+const getStringArray = (value: unknown): string[] => {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is string => typeof item === 'string');
+  }
+  return [];
+};
+
 export default function ReviewSubmitStep({ value, onBack, onEditStep }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string>('');
@@ -51,7 +59,7 @@ export default function ReviewSubmitStep({ value, onBack, onEditStep }: Props) {
         subcounty: String(value.subcounty || ''),
         ward: String(value.ward || ''),
         accountType: String(value.accountType || ''),
-        selectedMusicGenres: (value.accountType === 'Artist' || value.accountType === 'Label') ? (Array.isArray(value.selectedMusicGenres) ? value.selectedMusicGenres : []) : undefined,
+        selectedMusicGenres: (value.accountType === 'Artist' || value.accountType === 'Label') ? getStringArray(value.selectedMusicGenres) : undefined,
         campaignObjective: String(value.campaignObjective || ''),
         campaignName: String(value.campaignName || ''),
         campaignDescription: String(value.campaignDescription || ''),
@@ -60,8 +68,8 @@ export default function ReviewSubmitStep({ value, onBack, onEditStep }: Props) {
         startDate: String(value.startDate || ''),
         endDate: String(value.endDate || ''),
         targetAudience: String(value.targetAudience || ''),
-        selectedSafetyPreferences: Array.isArray(value.selectedSafetyPreferences) ? value.selectedSafetyPreferences : [],
-        selectedBusinessTypes: Array.isArray(value.businessTarget?.types) ? value.businessTarget.types : (Array.isArray(value.selectedBusinessTypes) ? value.selectedBusinessTypes : []),
+        selectedSafetyPreferences: getStringArray(value.selectedSafetyPreferences),
+        selectedBusinessTypes: getStringArray(value.businessTarget?.types) || getStringArray(value.selectedBusinessTypes),
         otherBusinessType: String(value.businessTarget?.custom ?? value.otherBusinessType ?? ''),
         totalBudget: Number(value.totalBudget || 0),
         targetCountry: value.targetCountry ? String(value.targetCountry) : null,
