@@ -49,7 +49,6 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
-  const [validating, setValidating] = useState<Record<string, boolean>>({});
 
   // Fetch countries on component mount
   useEffect(() => {
@@ -151,7 +150,6 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
   const validateEmail = async (emailValue: string) => {
     if (!emailValue || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailValue)) return;
 
-    setValidating(prev => ({ ...prev, email: true }));
     try {
       const response = await fetch('/api/validate/email', {
         method: 'POST',
@@ -171,8 +169,6 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
       }
     } catch (error) {
       console.error('Email validation failed:', error);
-    } finally {
-      setValidating(prev => ({ ...prev, email: false }));
     }
   };
 
@@ -183,7 +179,6 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
       return;
     }
 
-    setValidating(prev => ({ ...prev, nationalId: true }));
     try {
       const response = await fetch('/api/validate/national-id', {
         method: 'POST',
@@ -205,15 +200,12 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
       }
     } catch (error) {
       console.error('National ID validation failed:', error);
-    } finally {
-      setValidating(prev => ({ ...prev, nationalId: false }));
     }
   };
 
   const validatePhone = async (phoneValue: string) => {
     if (!phoneValue || !/^\+\d{1,4}\d+$/.test(phoneValue)) return;
 
-    setValidating(prev => ({ ...prev, phone: true }));
     try {
       const response = await fetch('/api/validate/phone', {
         method: 'POST',
@@ -233,8 +225,6 @@ export default function AccountSetupStep({ value, onChange, onNext }: Props) {
       }
     } catch (error) {
       console.error('Phone validation failed:', error);
-    } finally {
-      setValidating(prev => ({ ...prev, phone: false }));
     }
   };
 
