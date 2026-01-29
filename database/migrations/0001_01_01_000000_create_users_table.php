@@ -28,13 +28,13 @@ return new class extends Migration
 
             $table->string('referral_code')->unique();
 
-            $table->string('wallet_type', ['personal', 'business', 'both']);
+            $table->enum('wallet_type', ['personal', 'business', 'both']);
             $table->string('wallet_status');
             $table->string('wallet_pin');
-            $table->string('wallet_balance', 12, 2);
+            $table->decimal('wallet_balance', 12, 2)->default(0);
 
-            $table->string('total_DDS_balance', 12, 2);
-            $table->string('total_DWS_balance', 12, 2);
+            $table->decimal('total_DDS_balance', 12, 2)->default(0);
+            $table->decimal('total_DWS_balance', 12, 2)->default(0);
 
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
