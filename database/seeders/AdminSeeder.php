@@ -22,7 +22,7 @@ class AdminSeeder extends Seeder
                 'gender' => 'male',
             ],
             [
-                'email' => 'kelvinramsiel01@gmail.com',
+                'email' => 'kelvinramsiel@gmail.com',
                 'full_name' => 'Kelvin Ramsiel',
                 'phone' => '+254700000002',
                 'national_id' => '1000000002',
