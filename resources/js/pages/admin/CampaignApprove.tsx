@@ -1,4 +1,4 @@
-import { router, usePage } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import { CheckCircle, AlertTriangle } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ export default function CampaignApprove({ campaign, dcdAssigned, dcdName, succes
 
   useEffect(() => {
     if (success) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowSuccess(true);
     }
   }, [success]);

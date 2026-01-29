@@ -30,10 +30,12 @@ Route::get('client/register', [ClientController::class, 'register'])->name('clie
 Route::post('client/register', [ClientController::class, 'store'])->name('client.store');
 
 // Admin routes for campaign approval
-Route::get('admin/campaign/{campaign}/approve', [ClientController::class, 'approveCampaign'])->name('admin.campaign.approve');
-Route::post('admin/campaign/{campaign}/approve', [ClientController::class, 'processApprove'])->name('admin.campaign.process-approve');
-Route::get('admin/campaign/{campaign}/reject', [ClientController::class, 'rejectCampaign'])->name('admin.campaign.reject');
-Route::post('admin/campaign/{campaign}/reject', [ClientController::class, 'processReject'])->name('admin.campaign.process-reject');
+Route::middleware(['auth'])->group(function () {
+    Route::get('admin/campaign/{campaign}/approve', [ClientController::class, 'approveCampaign'])->name('admin.campaign.approve');
+    Route::post('admin/campaign/{campaign}/approve', [ClientController::class, 'processApprove'])->name('admin.campaign.process-approve');
+    Route::get('admin/campaign/{campaign}/reject', [ClientController::class, 'rejectCampaign'])->name('admin.campaign.reject');
+    Route::post('admin/campaign/{campaign}/reject', [ClientController::class, 'processReject'])->name('admin.campaign.process-reject');
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
